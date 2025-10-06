@@ -14,6 +14,9 @@
                 <div class="nav">
                     <a href="{{ route('manager.users.index') }}">users</a>
                 </div>
+                <div class="nav">
+                    <a href="{{ route('manager.clients.index') }}">Client</a>
+                </div>
             </div>
         </div>
     </div>

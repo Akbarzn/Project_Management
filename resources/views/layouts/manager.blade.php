@@ -7,10 +7,11 @@
 </head>
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
-        {{-- sidebar (bisa x-sidebar jika sudah komponen) --}}
+        {{-- sidebar (bisa x-sidebar jika sudah kompopnen) --}}
         <div class="w-64 bg-white shadow p-4 hidden md:block">
             <h3 class="font-bold mb-4">Manager</h3>
             <a href="{{ route('manager.users.index') }}" class="block py-2">Users</a>
+            <a href="{{ route('manager.clients.index') }}" class="block py-2">Clients</a>
             {{-- <a href="{{ route('manager.dashboard') ?? '#' }}" class="block py-2">Dashboard</a> --}}
         </div>
 

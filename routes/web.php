@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Manager\UserController;
+use App\Http\Controllers\Manager\ClientController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -21,5 +22,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth','role:manager'])->prefix('manager')->name('manager.')->group(function(){
     Route::resource('users', UserController::class);
 });
+
+Route::middleware(['auth','role:manager'])->prefix('manager')->name('manager.')->group(function(){
+    Route::resource('clients', ClientController::class);
+});
+
 
 require __DIR__.'/auth.php';
