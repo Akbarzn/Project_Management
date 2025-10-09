@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Manager;
+namespace App\Http\Controllers\Client;
 
 
 use App\Http\Controllers\Controller;
@@ -17,7 +17,7 @@ class ClientController extends Controller
     {
         //
         $clients = Client::with('user')->paginate(10);
-        return view('manager.clients.index', compact('clients'));
+        return view('clients.index', compact('clients'));
     }
 
     /**
@@ -26,7 +26,7 @@ class ClientController extends Controller
     public function create()
     {
         //
-        return view('manager.clients.create');
+        return view('clients.create');
     }
 
     /**
@@ -43,20 +43,12 @@ class ClientController extends Controller
     //     ]);
 
     //     Client::create($request->all());
-    //     return redirect()->route('manager.clients.index')->with('success', 'Client Success Added');
+    //     return redirect()->route('clients.index')->with('success', 'Client Success Added');
     // }
 
     public function store(Request $request)
 {
-    $request->validate([
-        'name' => 'required|max:50',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6', // tambahkan password juga
-        'nik' => 'required|max:15',
-        'phone' => 'nullable|max:15',
-        'kode_organisasi' => 'nullable|max:10',
-    ]);
-
+   
     // 1️⃣ Buat user baru
     $user = \App\Models\User::create([
         'name' => $request->name,
@@ -76,7 +68,7 @@ class ClientController extends Controller
         'kode_organisasi' => $request->kode_organisasi,
     ]);
 
-    return redirect()->route('manager.clients.index')
+    return redirect()->route('clients.index')
         ->with('success', 'Client berhasil ditambahkan.');
 }
 
@@ -95,7 +87,7 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         //
-        return view('manager.clients.edit',compact('client'));
+        return view('clients.edit',compact('client'));
     }
 
     /**
@@ -103,16 +95,15 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
-        //
-        $request->validate([
-            'name' => 'required|max:50',
-            'nik' => 'required|unique:clients,nik, |max:15',
-            'phone' => 'required|nullable|max:15',
-            'kode_organisasi' => 'nullable|max:10',
+
+       $client->update($request->validated()); 
+        $client->user->update([
+            'name' => $request->name
         ]);
 
-        $client->update($request->all());
-        return redirect()->route('manager.clients.index')->with('success', 'Client berhasil di update');
+        $user = $client->user;
+        $user->syncRoles('client');
+        return redirect()->route('clients.index')->with('success', 'Client berhasil di update');
     }
 
     /**
@@ -122,6 +113,6 @@ class ClientController extends Controller
     {
         //
         $client->delete();
-        return redirect()->route('manager.clients.index')->with('success', 'CLient berhasil di hapus');
+        return redirect()->route('clients.index')->with('success', 'CLient berhasil di hapus');
     }
 }

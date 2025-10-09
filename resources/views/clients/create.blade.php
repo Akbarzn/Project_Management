@@ -17,7 +17,7 @@
     @endif
 
     {{-- Form tambah client --}}
-    <form action="{{ route('manager.clients.store') }}" method="POST" class="space-y-6">
+    <form action="{{ route('clients.store') }}" method="POST" class="space-y-6">
         @csrf
 
         <div>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="flex justify-end space-x-3">
-            <a href="{{ route('manager.clients.index') }}"
+            <a href="{{ route('clients.index') }}"
                class="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-400 transition">
                 Batal
             </a>

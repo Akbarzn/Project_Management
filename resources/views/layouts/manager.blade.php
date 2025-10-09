@@ -12,6 +12,9 @@
             <h3 class="font-bold mb-4">Manager</h3>
             <a href="{{ route('manager.users.index') }}" class="block py-2">Users</a>
             <a href="{{ route('manager.clients.index') }}" class="block py-2">Clients</a>
+            <a href="{{ route('manager.karyawans.index') }}" class="block py-2">Karyawans</a>
+            <a href="{{ route('manager.projects.index') }}" class="block py-2">projects</a>
+            <a href="{{ route('clients.project-requests.index') }}" class="block py-2">Project Reques</a>
             {{-- <a href="{{ route('manager.dashboard') ?? '#' }}" class="block py-2">Dashboard</a> --}}
         </div>
 

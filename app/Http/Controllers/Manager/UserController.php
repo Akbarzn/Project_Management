@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         //
         $users = User::paginate(10);
-        return view('manager.users.index', compact('users'));
+        return view('managers.users.index', compact('users'));
     }
 
     /**
@@ -26,7 +26,7 @@ class UserController extends Controller
     public function create()
     {
         //
-        return view('manager.users.create');
+        return view('managers.users.create');
     }
 
     /**
@@ -50,7 +50,7 @@ class UserController extends Controller
 
         $user->assignRole($data['role']);
 
-        return redirect()->route('manager.users.index')->with('success', 'User Created');
+        return redirect()->route('managers.users.index')->with('success', 'User Created');
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         //
-        return view('manager.users.edit',compact('user'));
+        return view('managers.users.edit',compact('user'));
     }
 
     /**
@@ -94,7 +94,7 @@ class UserController extends Controller
     //     }
     //     $user->save();
     //     $user->syncRoles([$data['role']]);
-    //     return redirect()->route('manager.users.index')->with('success', 'Update Success');
+    //     return redirect()->route('managers.users.index')->with('success', 'Update Success');
     // }
 
     public function update(Request $request, User $user)
@@ -120,7 +120,7 @@ class UserController extends Controller
     $user->save();
     $user->syncRoles([$data['role']]);
 
-    return redirect()->route('manager.users.index')->with('success', 'Update Success');
+    return redirect()->route('managers.users.index')->with('success', 'Update Success');
 }
 
 
@@ -134,6 +134,6 @@ class UserController extends Controller
             return redirect()->back()->with('error','You cannot delete yourself.');
         }
         $user->delete();
-        return redirect()->route('manager.users.index')->with('success', 'Delete Success');
+        return redirect()->route('managers.users.index')->with('success', 'Delete Success');
     }
 }

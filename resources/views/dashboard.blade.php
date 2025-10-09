@@ -17,6 +17,15 @@
                 <div class="nav">
                     <a href="{{ route('manager.clients.index') }}">Client</a>
                 </div>
+                <div class="nav">
+                    <a href="{{ route('manager.karyawans.index') }}">Karyawans</a>
+                </div>
+                <div class="nav">
+                    <a href="{{ route('clients.project-requests.index') }}">project request</a>
+                </div>
+                <div class="nav">
+                    <a href="{{ route('manager.projects.index') }}">project</a>
+                </div>
             </div>
         </div>
     </div>
