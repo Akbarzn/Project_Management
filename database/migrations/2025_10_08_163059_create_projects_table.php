@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('request_id')->nullable()->contrained('project_requests')->onDelete('set null');
             $table->date('start_date_project');
             $table->date('finish_date_project');
-            $table->string('status', 20)->default('pending');
+            $table->enum('status', ['pending','ongoing', 'overdue', 'complete'])->default('pending');
+            $table->decimal('total_cost', 15)->nullable();
             $table->foreignId('created_by')->nullable()->contrained('users')->onDelete('set null');
             $table->foreignId('approved_by')->nullable()->contrained('users')->onDelete('set null');
             $table->boolean('is_approved')->default(false);

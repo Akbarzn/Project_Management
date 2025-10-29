@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\{Auth, DB};
 
 class ProjectController extends Controller
 {
+
+    
     /**
      * Tampilkan daftar project.
      */
@@ -19,7 +21,7 @@ class ProjectController extends Controller
             ->latest()
             ->get();
 
-        return view('managers.projects.index', compact('projects'));
+        return view('manager.projects.index', compact('projects'));
     }
 
     /**
@@ -32,7 +34,7 @@ class ProjectController extends Controller
             ->latest()
             ->get();
 
-        return view('managers.projects.show-projects', compact('requests'));
+        return view('manager.projects.show-projects', compact('requests'));
     }
 
     /**
@@ -44,14 +46,14 @@ class ProjectController extends Controller
         $karyawans = Karyawan::all();
 
         $requiredRoles = [
-            'Analis',
-            'Desainer',
+            'Analisis Proses Bisnis',
+            'Database Functional',
             'Programmer',
-            'Tester',
+            'Quality Test',
             'SysAdmin',
         ];
 
-        return view('managers.projects.create', compact('request', 'karyawans', 'requiredRoles'));
+        return view('manager.projects.create', compact('request', 'karyawans', 'requiredRoles'));
     }
 
     /**
@@ -60,39 +62,41 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         DB::transaction(function () use ($request) {
-            $projectRequest = ProjectRequest::findOrFail($request->request_id);
+                $projectRequest = ProjectRequest::findOrFail($request->request_id);
+                
+                $project = Project::create([
+                    'name_project'        => $request->name_project,
+                    'client_id'           => $projectRequest->client_id,
+                    'request_id'          => $projectRequest->id,
+                    'start_date_project'  => $request->start_date_project,
+                    'finish_date_project' => $request->finish_date_project,
+                    'status'              => 'ongoing',
+                    'created_by'          => Auth::id(),
+                    'approved_by'         => Auth::id(),
+                    'is_approved'         => true,
+                    'total_cost'          =>0,
+                ]);
 
-            // 1️⃣ Buat data project
-            $project = Project::create([
-                'project_name'        => $request->project_name,
-                'client_id'           => $projectRequest->client_id,
-                'request_id'          => $projectRequest->id,
-                'start_date_project'  => $request->start_date_project,
-                'finish_date_project' => $request->finish_date_project,
-                'status'              => 'ongoing',
-                'created_by'          => Auth::id(),
-                'approved_by'         => Auth::id(),
-                'is_approved'         => true,
-            ]);
+                // assign karyawan ke project (tabel pivot)
+                $project->karyawans()->attach($request->karyawan_ids);
 
-            // 2️⃣ Assign karyawan ke project (tabel pivot)
-            $project->karyawans()->attach($request->karyawan_ids);
+                $assignedKaryawans = Karyawan::whereIn('id', $request->karyawan_ids)->get();
 
-            // 3️⃣ Optional: Buat task awal (kalau tabel Task sudah ada)
-            // foreach ($request->karyawan_ids as $karyawanId) {
-            //     Task::create([
-            //         'project_id'      => $project->id,
-            //         'karyawan_id'     => $karyawanId,
-            //         'task'            => 'Initial Assignment',
-            //         'status'          => 'pending',
-            //         'progress'        => 0,
-            //         'start_date_task' => $request->start_date_project,
-            //     ]);
-            // }
+                foreach ($assignedKaryawans as $karyawan) {
+                // $taskName = $karyawan->job_title . ' Assignment'; 
+                
+                Task::create([
+                    'project_id'      => $project->id,
+                    'karyawan_id'     => $karyawan->id, 
+                    'description_task'            => 'Initial Assignment for ' . $karyawan->job_title . '.', 
+                    'status' =>'pending',
+                    'progress'        => 0,
+                    // 'start_date_task' => $request->start_date_project,
+                ]);
+            }
 
-            // 4️⃣ Ubah status request menjadi approved
-            $projectRequest->update(['status' => 'approve']);
-        });
+        $projectRequest->update(['status' => 'approve']);
+    });
 
         return redirect()
             ->route('manager.projects.index')
@@ -103,11 +107,14 @@ class ProjectController extends Controller
      * Detail project.
      */
     public function show(Project $project)
-    {
-        $project->load(['client', 'projectRequest', 'karyawans', 'tasks']);
+{
+    
+    $project->load(['client', 'projectRequest', 'karyawans', 'tasks.karyawan']);
+    // Ambil ID karyawan yang sudah ditugaskan
+   
+    return view('manager.projects.show', compact('project'));
+}
 
-        return view('managers.projects.show', compact('project'));
-    }
 
     /**
      * Form edit project.
@@ -116,28 +123,73 @@ class ProjectController extends Controller
     {
         $project->load(['client', 'projectRequest', 'karyawans']);
         $karyawans = Karyawan::all();
+         $selectedKaryawanIds = $project->karyawans->pluck('id')->toArray();
+     $requiredRoles = [
+            'Analisis Proses Bisnis',
+            'Database Functional',
+            'Programmer',
+            'Quality Test',
+            'SysAdmin',
+        ];
 
-        return view('managers.projects.edit', compact('project', 'karyawans'));
+        return view('manager.projects.edit', compact('project', 'karyawans','requiredRoles', 'selectedKaryawanIds'));
     }
 
     /**
      * Update project.
-     */
+    */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        $project->update([
-            'project_name'        => $request->project_name,
-            'approved_by'         => Auth::id(),
-            'is_approved'         => true,
-            'status'              => 'ongoing',
-            'start_date_project'  => $request->start_date_project,
-            'finish_date_project' => $request->finish_date_project,
-        ]);
+        // dd($request->al  l());
 
-        $project->karyawans()->sync($request->karyawan_ids);
+       DB::transaction(function () use ($request, $project) {
+
+            $project->update([
+                'name_project'          => $request->name_project,
+                'approved_by'           => Auth::id(),
+                'is_approved'           => true,
+                'status'                => 'ongoing',
+                'start_date_project'    => $request->start_date_project,
+                'finish_date_project'   => $request->finish_date_project,
+            ]);
+
+            // Sinkronisasi Karyawan di tabel pivot
+            $project->karyawans()->sync($request->karyawan_ids);
+
+            // 1. Dapatkan Karyawan yang Baru Ditambahkan (Perlu dibuatkan Task)
+            $oldKaryawanIds = $project->tasks()->pluck('karyawan_id')->toArray();
+            $newKaryawanIds = collect($request->karyawan_ids)->diff($oldKaryawanIds);
+            
+            if ($newKaryawanIds->isNotEmpty()) {
+                $newKaryawans = Karyawan::whereIn('id', $newKaryawanIds)->get();
+                foreach ($newKaryawans as $karyawan) {
+                    Task::create([
+                        'project_id'        => $project->id,
+                        'karyawan_id'       => $karyawan->id, 
+                        // 'job_title'         => $karyawan->job_title . ' Assignment',
+                        'description_task'  => 'Initial Assignment for ' . $karyawan->job_title . '.', 
+                        'status'            => 'pending',
+                        'progress'          => 0,
+                    ]);
+                }
+            }
+
+            // 2. Dapatkan Karyawan yang Dihapus (Perlu dihapus Task-nya jika status masih pending)
+            $removedKaryawanIds = collect($oldKaryawanIds)->diff($request->karyawan_ids);
+            
+            if ($removedKaryawanIds->isNotEmpty()) {
+                // Hapus task hanya jika statusnya masih 'pending' atau 'inwork' (untuk menghindari penghapusan log kerja penting)
+                // Jika ingin lebih aman, batasi hanya status 'pending'
+                $project->tasks()
+                    ->whereIn('karyawan_id', $removedKaryawanIds)
+                    ->where('status', 'pending')
+                    ->delete();
+            }
+        });
+
 
         return redirect()
-            ->route('managers.projects.index')
+            ->route('manager.projects.index')
             ->with('success', 'Project berhasil diperbarui dan karyawan telah disinkronkan.');
     }
 
@@ -149,7 +201,7 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()
-            ->route('managers.projects.index')
+            ->route('manager.projects.index')
             ->with('success', 'Project berhasil dihapus.');
     }
 }

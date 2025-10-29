@@ -33,9 +33,9 @@ class AuthenticatedSessionController extends Controller
     // Cek role user untuk arahkan ke halaman yang sesuai
     switch ($user->role) {
         case 'manager':
-            return redirect()->route('manager.dashboard');
+            return redirect()->route('manager.manager.dashboard');
         case 'karyawan':
-            return redirect()->route('karyawan.dashboard');
+            return redirect()->route('karyawan.karyawan.index');
         case 'client':
             return redirect()->route('project_request.index');
         default:

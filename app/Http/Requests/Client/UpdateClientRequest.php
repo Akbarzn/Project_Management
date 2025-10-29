@@ -21,13 +21,11 @@ class UpdateClientRequest extends FormRequest
      */
     public function rules(): array
     {
-          // Ambil instance Client dari route parameter (diperlukan untuk unik pengecualian)
         $clientId = $this->route('client')->id ?? null; 
 
         return [
             'name' => 'required|max:50',
             
-            // Nik unik dikecualikan (ignore) untuk Client yang sedang diupdate ($clientId)
             'nik' => 'nullable|unique:clients,nik,' . $clientId, 
             
             'phone' => 'nullable|max:15',

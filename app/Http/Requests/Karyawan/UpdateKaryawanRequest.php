@@ -21,11 +21,10 @@ class UpdateKaryawanRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Kita dapat mengakses model Karyawan yang sedang diperbarui melalui route
         $karyawanId = $this->route('karyawan')->id ?? null;
         return [
             'name' => 'sometimes|max:50',
-            'nik' => 'sometimes|unique:karyawans,nik,' .$karyawan->id,
+            'nik' => 'sometimes|unique:karyawans,nik,' .$karyawanId,
             'phone' => 'sometimes',
             'job_title' =>'sometimes',
             'cost' => 'sometimes|numeric',

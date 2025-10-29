@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Requests\Client\StoreClientRequest;
+use App\Http\Requests\Client\UpdateClientRequest;
 
 class ClientController extends Controller
 {
@@ -17,7 +19,7 @@ class ClientController extends Controller
     {
         //
         $clients = Client::with('user')->paginate(10);
-        return view('clients.index', compact('clients'));
+        return view('manager.clients.index', compact('clients'));
     }
 
     /**
@@ -25,8 +27,8 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
-        return view('clients.create');
+        
+        return view('manager.clients.create');
     }
 
     /**
@@ -46,31 +48,37 @@ class ClientController extends Controller
     //     return redirect()->route('clients.index')->with('success', 'Client Success Added');
     // }
 
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
 {
    
-    // 1️⃣ Buat user baru
-    $user = \App\Models\User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password), // enkripsi password
-    ]);
+      // ambil data yang sudah divalidasi
+        $validatedData = $request->validated();
+        
+        // buat user baru
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']), 
+        ]);
 
-    // assign role client
-    $user->assignRole('client');
+        // cek apakah metod ada di spatie 
+        if (method_exists($user, 'assignRole')) {
+             $user->assignRole('client');
+        }
 
-    // 2️⃣ Buat data client yang terhubung dengan user
-    Client::create([
-        'user_id' => $user->id,
-        'name' => $user->name,
-        'nik' => $request->nik,
-        'phone' => $request->phone,
-        'kode_organisasi' => $request->kode_organisasi,
-    ]);
+        // buat data client yang terhubung dengan user
+        Client::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'nik' => $validatedData['nik'],
+            'phone' => $validatedData['phone'],
+            'kode_organisasi' => $validatedData['kode_organisasi'],
+        ]);
 
-    return redirect()->route('clients.index')
-        ->with('success', 'Client berhasil ditambahkan.');
-}
+        return redirect()->route('manager.clients.index')
+            ->with('success', 'Client berhasil ditambahkan.');
+    }
+
 
 
     /**
@@ -87,13 +95,13 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         //
-        return view('clients.edit',compact('client'));
+        return view('manager.clients.edit',compact('client'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Client $client)
+    public function update(UpdateClientRequest $request, Client $client)
     {
 
        $client->update($request->validated()); 
@@ -103,16 +111,16 @@ class ClientController extends Controller
 
         $user = $client->user;
         $user->syncRoles('client');
-        return redirect()->route('clients.index')->with('success', 'Client berhasil di update');
+        return redirect()->route('manager.clients.index')->with('success', 'Client berhasil di update');
     }
 
-    /**
+    /** 
      * Remove the specified resource from storage.
      */
     public function destroy(Client $client)
     {
         //
         $client->delete();
-        return redirect()->route('clients.index')->with('success', 'CLient berhasil di hapus');
+        return redirect()->route('manager.clients.index')->with('success', 'CLient berhasil di hapus');
     }
 }

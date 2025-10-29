@@ -28,5 +28,10 @@ class StoreProjectRequest extends FormRequest
             'description' => ['required', 'string'],
             'document' => ['nullable', 'file', 'mimes:pdf,doc,docx,png,jpg,jpeg', 'max:2048'],
         ];
+
+        if(auth()->user()->hasRole('manager')){
+            $rules['client_id'] = ['required', 'exists:clients,id'];
+        }
+        return $rules;
     }
 }

@@ -13,25 +13,58 @@ class ProjectRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //     $request = ProjectRequest::with('client')->paginate(10);
+    //     return view('clients.project-requests.index', compact('request'));
+    // }
+
     public function index()
-    {
-        $request = ProjectRequest::with('client')->paginate(10);
-return view('clients.project-requests.index', compact('request'));
+{
+    $user = auth()->user();
+
+    // Pastikan user adalah client
+    if ($user->hasRole('client')) {
+        $clientId = $user->client->id;
+
+        // Ambil project request milik client yang login saja
+        $requests = ProjectRequest::with('client')
+            ->where('client_id', $clientId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+    } else {
+        // Untuk manager atau lainnya, tampilkan semua
+        $requests = ProjectRequest::with('client')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
     }
+
+    return view('clients.project-requests.index', compact('requests'));
+}
+
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        // Ambil data client yang sedang login
-        $client = Auth::user()->client;
+        // ambil data client yang sedang login
+        // $client = Auth::user()->client;
+        $user = Auth::user();
+        $isManager = $user->hasRole('manager');
+        $client = null;
+        $clients = collect();
+        if($user->hasRole('client')){
+            $client = $user->client;
+        }elseif($isManager){
+            $clients = Client::all(['id','name']);
+        }
 
-        // Generate nomor tiket terbaru
+        // generate nomor tiket terbaru
         $ticketNumber = $this->generateTiket();
 
-        // Kirim ke view agar bisa ditampilkan sebelum submit
-return view('clients.project-requests.create', compact('client', 'ticketNumber'));
+        return view('clients.project-requests.create', compact('client', 'ticketNumber'));
     }
 
     /**
@@ -39,15 +72,15 @@ return view('clients.project-requests.create', compact('client', 'ticketNumber')
      */
     private function generateTiket()
     {
-        $today = now()->format('dmY'); // contoh: 08102025
+        $today = now()->format('dmY');
 
-        // Cari nomor tiket terakhir yang punya prefix tanggal hari ini
+        // cari nomor tiket terakhir yang punya prefix tanggal hari ini
         $lastTicket = ProjectRequest::where('tiket', 'like', $today . '%')
             ->orderBy('tiket', 'desc')
             ->first();
 
         if ($lastTicket) {
-            $lastNumber = (int) substr($lastTicket->tiket, -3); // ambil 3 digit terakhir
+            $lastNumber = (int) substr($lastTicket->tiket, -3); // ambil 3 digit terakhir untuk no berjalannya
             $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '001';
@@ -61,7 +94,7 @@ return view('clients.project-requests.create', compact('client', 'ticketNumber')
      */
     public function store(Request $request)
     {
-        
+
 
         $client = Auth::user()->client;
         $filePath = null;
@@ -91,15 +124,16 @@ return view('clients.project-requests.create', compact('client', 'ticketNumber')
      */
     public function show(ProjectRequest $projectRequest)
     {
-return view('clients.project-requests.show', compact('projectRequest'));
+        // $request = ProjectRequest::with('client');
+    return view('clients.project-requests.show', compact('ProjectRequest'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+ * Show the form for editing the specified resource
      */
     public function edit(ProjectRequest $projectRequest)
     {
-return view('clients.project-requests.edit', compact('projectRequest'));
+        return view('clients.project-requests.edit', compact('projectRequest'));
     }
 
     /**
@@ -117,11 +151,10 @@ return view('clients.project-requests.edit', compact('projectRequest'));
         $projectRequest->update([
             'kategori' => $request->kategori,
             'description' => $request->description,
-            'status' => $request->status,
             'document' => $projectRequest->upload_file,
         ]);
 
-return redirect()->route('clients.project-requests.index')->with('success', 'Project request berhasil diperbarui.');
+        return redirect()->route('clients.project-requests.index')->with('success', 'Project request berhasil diperbarui.');
     }
 
     /**
@@ -135,6 +168,6 @@ return redirect()->route('clients.project-requests.index')->with('success', 'Pro
 
         $projectRequest->delete();
 
-return redirect()->route('clients.project-requests.index')->with('success', 'Project request berhasil dihapus.');
+        return redirect()->route('clients.project-requests.index')->with('success', 'Project request berhasil dihapus.');
     }
 }

@@ -21,12 +21,20 @@ class StoreKaryawanRequest extends FormRequest
      */
     public function rules(): array
     {
+        $jobTitles = [
+            'Analisis Proses Bisnis',
+            'Database FUnctional',
+            'Programmer',
+            'Quality Test',
+            'SysAdmin',
+        ];
+        
         return [
-            'email' => 'required|unique:karyawans,email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'name' => 'required|max:50',
             'nik' => 'nullable|unique:karyawans,nik', 
-            'jabatan' => 'string|max:25',
+            'jabatan' => 'string|max:50',
             'phone' => 'required|nullable',
             'job_title' =>'required',
             'cost' => 'required|numeric'

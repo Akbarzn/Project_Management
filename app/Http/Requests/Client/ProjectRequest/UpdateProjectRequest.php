@@ -28,5 +28,9 @@ class UpdateProjectRequest extends FormRequest
             'document' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
             'status' => ['sometimes', 'in:pending,approve,rejected'],
         ];
+        if(auth()->user()->hasRole('manager')){
+            $rules['client_id'] = ['required', 'exists:clients,id'];
+        }
+        return $rules;
     }
 }

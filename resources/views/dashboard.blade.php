@@ -26,6 +26,9 @@
                 <div class="nav">
                     <a href="{{ route('manager.projects.index') }}">project</a>
                 </div>
+                <div class="nav">
+                    <a href="{{ route('karyawan.tasks.index') }}">task karyawan</a>
+                </div>
             </div>
         </div>
     </div>

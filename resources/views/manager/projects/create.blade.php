@@ -15,7 +15,6 @@
                 <p class="text-gray-700">Deskripsi: {{ $request->description }}</p>
             </div>
 
-            {{-- Form Input Project --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {{-- Nama Project --}}
                 <div>
@@ -76,7 +75,6 @@
                 @endforeach
             </div>
 
-            {{-- Tombol Submit --}}
             <div class="pt-5 border-t mt-4">
                 <button type="submit" 
                     class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">

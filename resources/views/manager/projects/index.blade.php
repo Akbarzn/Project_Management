@@ -20,13 +20,16 @@
                     <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Disetujui Oleh</th>
                     <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Tanggal Mulai</th>
                     <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Tanggal Selesai</th>
+                    <th scope="col" class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
 
             <tbody class="bg-white divide-y divide-gray-100">
                 @forelse($projects as $project)
                     <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-800">{{ $project->projectRequest->name_project }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-800">
+                            {{ $project->projectRequest->name_project ?? $project->projectRequest->name_project }}
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-700">{{ $project->client->name ?? '-' }}</td>
                         <td class="px-6 py-4">
                             @if($project->status === 'ongoing')
@@ -46,10 +49,38 @@
                         <td class="px-6 py-4 text-sm text-gray-700">{{ $project->approver->name ?? '-' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-700">{{ $project->start_date_project ?? '-' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-700">{{ $project->finish_date_project ?? '-' }}</td>
+
+                        <!-- Aksi -->
+                        <td class="px-6 py-4">
+                            <div class="flex justify-center space-x-2">
+                                <!-- Detail -->
+                                <a href="{{ route('manager.projects.show', $project->id) }}"
+                                   class="flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg shadow transition duration-200">
+                                    <i class="fas fa-eye mr-1"></i> Detail
+                                </a>
+
+                                <!-- Edit -->
+                                <a href="{{ route('manager.projects.edit', $project->id) }}"
+                                   class="flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold rounded-lg shadow transition duration-200">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </a>
+
+                                <!-- Hapus -->
+                                <form action="{{ route('manager.projects.destroy', $project->id) }}" method="POST"
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus project ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="flex items-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg shadow transition duration-200">
+                                        <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-6 text-center text-gray-500">Belum ada project yang tersedia</td>
+                        <td colspan="7" class="px-6 py-6 text-center text-gray-500">Belum ada project yang tersedia</td>
                     </tr>
                 @endforelse
             </tbody>

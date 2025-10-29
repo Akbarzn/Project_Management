@@ -1,75 +1,86 @@
 @extends('layouts.client')
 
 @section('content')
-<div class="container">
-    <h3>Buat Project Request</h3>
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-2xl font-semibold mb-6 ">Buat Project Request</h3>
 
-<form action="{{ route('clients.project-requests.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('clients.project-requests.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- Informasi Client & Tiket --}}
-        <div class="mb-3">
-            <label class="form-label">Nomor Tiket</label>
-            <input type="text" class="form-control" value="{{ $ticketNumber }}" readonly>
+        {{-- Nomor Tiket --}}
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Nomor Tiket</label>
+            <input type="text" value="{{ $ticketNumber }}" readonly
+                class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nama</label>
-            <input type="text" class="form-control" value="{{ $client->name }}" readonly>
+        {{-- Nama Client --}}
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Nama</label>
+            <input type="text" value="{{ $client->name }}" readonly
+                class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">NIK</label>
-            <input type="text" class="form-control" value="{{ $client->nik }}" readonly>
+        {{-- Nik Client --}}
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Nik</label>
+            <input type="text" value="{{ $client->nik }}" readonly
+            class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Kode Organisasi</label>
-            <input type="text" class="form-control" value="{{ $client->kode_organisasi }}" readonly>
+        {{-- Kode Organisasi Client --}}
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Kode Organisasi</label>
+            <input type="text" value="{{ $client->kode_organisasi }}" readonly
+            class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="text" class="form-control" value="{{ $client->user->email }}" readonly>
+        {{-- Phone Client --}}
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Phone</label>
+            <input type="text" value="{{ $client->phone }}" readonly
+            class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Telepon</label>
-            <input type="text" class="form-control" value="{{ $client->phone }}" readonly>
+        {{-- Nama Project --}}
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Nama Project</label>
+            <input type="text" name="name_project" required
+                class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nama Project</label>
-            <input type="text" name='name_project' class="form-control" required >
-        </div>
-
-        {{-- Form Kategori --}}
-        <div class="mb-3">
-            <label class="form-label d-block">Kategori</label>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="kategori" value="New Aplikasi" required>
-                <label class="form-check-label">New Aplikasi</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="kategori" value="Update Aplikasi" required>
-                <label class="form-check-label">Update Aplikasi</label>
-            </div>
+        {{-- Kategori --}}
+        <div class="mb-4">
+            <span class="block text-gray-700 font-medium mb-2">Kategori</span>
+            <label class="inline-flex items-center mr-4">
+                <input type="radio" name="kategori" value="New Aplikasi" required
+                    class="form-radio text-indigo-600">
+                <span class="ml-2">New Aplikasi</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input type="radio" name="kategori" value="Update Aplikasi" required
+                    class="form-radio text-indigo-600">
+                <span class="ml-2">Update Aplikasi</span>
+            </label>
         </div>
 
         {{-- Deskripsi --}}
-        <div class="mb-3">
-            <label for="description" class="form-label">Deskripsi</label>
-            <textarea name="description" id="description" class="form-control" rows="4" required></textarea>
+        <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-medium mb-1">Deskripsi</label>
+            <textarea name="description" id="description" rows="4" required
+                class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
 
         {{-- Upload Dokumen --}}
-        <div class="mb-3">
-            <label for="document" class="form-label">Upload Dokumen (opsional)</label>
-            <input type="file" name="document" id="document" class="form-control">
-            <div class="form-text">PDF, DOC, DOCX, PNG, JPG, JPEG (Maks 2MB)</div>
+        <div class="mb-4">
+            <label for="document" class="block text-gray-700 font-medium mb-1">Upload Dokumen (opsional)</label>
+            <input type="file" name="document" id="document"
+                class="block w-full border border-gray-300 rounded-md px-3 py-2">
+            <p class="text-sm text-gray-500 mt-1">PDF, DOC, DOCX, PNG, JPG, JPEG (Maks 2MB)</p>
         </div>
 
-        <button type="submit" class="btn btn-primary">Kirim Request</button>
+        <button type="submit"
+            class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition">Kirim Request</button>
     </form>
 </div>
 @endsection

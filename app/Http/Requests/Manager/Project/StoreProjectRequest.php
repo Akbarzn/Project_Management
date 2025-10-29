@@ -21,12 +21,13 @@ class StoreProjectRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+    return [
             'start_date_project' => 'required|string|max:100',
             'finish_date_project' => 'required|date|after_or_equal:start_date_project',
             'karyawan_ids' => 'required|array|min:5|max:5',
             'karyawan_ids.*' => 'exists:karyawans,id',
-            'request_id' => 'required|exists:project_requests,id'
+            'request_id' => 'required|exists:project_requests,id',
+            'total_cost' => 'nullable'
         ];
     }
 }

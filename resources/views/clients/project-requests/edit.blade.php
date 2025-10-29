@@ -3,87 +3,74 @@
 @section('title', 'Edit Project Request')
 
 @section('content')
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Edit Project Request</h5>
-<a href="{{ route('clients.project-requests.index') }}" class="btn btn-light btn-sm">
-            <i class="fa-solid fa-arrow-left"></i> Kembali
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-6">
+        <h5 class="text-xl font-semibold">Edit Project Request</h5>
+        <a href="{{ route('clients.project-requests.index') }}" 
+           class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300">
+           ← Kembali
         </a>
     </div>
 
-    <div class="card-body">
-<form action="{{ route('clients.project-requests.update', $projectRequest->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+    <form action="{{ route('clients.project-requests.update', $projectRequest->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
 
-              {{-- Kategori (RADIO BUTTONS) --}}
-            <div class="mb-3">
-                <label class="form-label d-block">Kategori</label>
-                
-                {{-- Pilihan 1: New Aplikasi --}}
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input @error('kategori') is-invalid @enderror" type="radio" name="kategori" id="kategori_new" value="New Aplikasi" 
-                           {{ old('kategori', $projectRequest->kategori) == 'New Aplikasi' ? 'checked' : '' }} required>
-                    <label class="form-check-label" for="kategori_new">New Aplikasi</label>
-                </div>
+        {{-- Kategori --}}
+        <div class="mb-4">
+            <span class="block text-gray-700 font-medium mb-2">Kategori</span>
+            <label class="inline-flex items-center mr-4">
+                <input type="radio" name="kategori" value="New Aplikasi" required
+                    class="form-radio text-indigo-600"
+                    {{ old('kategori', $projectRequest->kategori) == 'New Aplikasi' ? 'checked' : '' }}>
+                <span class="ml-2">New Aplikasi</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input type="radio" name="kategori" value="Update Aplikasi" required
+                    class="form-radio text-indigo-600"
+                    {{ old('kategori', $projectRequest->kategori) == 'Update Aplikasi' ? 'checked' : '' }}>
+                <span class="ml-2">Update Aplikasi</span>
+            </label>
+            @error('kategori')
+                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
-                {{-- Pilihan 2: Update Aplikasi --}}
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input @error('kategori') is-invalid @enderror" type="radio" name="kategori" id="kategori_update" value="Update Aplikasi" 
-                           {{ old('kategori', $projectRequest->kategori) == 'Update Aplikasi' ? 'checked' : '' }} required>
-                    <label class="form-check-label" for="kategori_update">Update Aplikasi</label>
-                </div>
+        {{-- Deskripsi --}}
+        <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-medium mb-1">Deskripsi</label>
+            <textarea name="description" id="description" rows="4" required
+                class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('description') border-red-500 @enderror">{{ old('description', $projectRequest->description) }}</textarea>
+            @error('description')
+                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+            @enderror
+        </div>
 
-                @error('kategori')
-                    <div class="invalid-feedback d-block">{{ $message }}</div> 
-                @enderror
-            </div>
+        {{-- Upload Dokumen --}}
+        <div class="mb-4">
+            <label for="upload_file" class="block text-gray-700 font-medium mb-1">Upload Dokumen (Opsional)</label>
+            <input type="file" name="upload_file" id="upload_file"
+                class="block w-full border border-gray-300 rounded-md px-3 py-2 @error('upload_file') border-red-500 @enderror" accept=".pdf,.doc,.docx,.zip,.rar">
+            @error('upload_file')
+                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+            @enderror
+            @if($projectRequest->upload_file)
+                <p class="mt-2 text-gray-700">📎 Dokumen saat ini:
+                    <a href="{{ asset('storage/' . $projectRequest->upload_file) }}" target="_blank" class="text-indigo-600 hover:underline">Lihat File</a>
+                </p>
+            @endif
+        </div>
 
-            {{-- Deskripsi --}}
-            <div class="mb-3">
-                <label for="description" class="form-label">Deskripsi</label>
-                <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="4" required>{{ old('description', $projectRequest->description) }}</textarea>
-                @error('description')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+       
+        </div>
 
-            {{-- Upload Dokumen --}}
-            <div class="mb-3">
-                <label for="upload_file" class="form-label">Upload Dokumen (Opsional)</label>
-                <input type="file" name="upload_file" id="upload_file" class="form-control @error('upload_file') is-invalid @enderror" accept=".pdf,.doc,.docx,.zip,.rar">
-                @error('upload_file')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-
-                @if($projectRequest->upload_file)
-                    <p class="mt-2">📎 Dokumen saat ini:
-                        <a href="{{ asset('storage/' . $projectRequest->upload_file) }}" target="_blank">Lihat File</a>
-                    </p>
-                @endif
-            </div>
-
-            {{-- Status --}}
-            <div class="mb-3">
-                <label for="status" class="form-label">Status</label>
-                <select name="status" id="status" class="form-select @error('status') is-invalid @enderror">
-                    <option value="pending" {{ old('status', $projectRequest->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="team_assigned" {{ old('status', $projectRequest->status) == 'team_assigned' ? 'selected' : '' }}>Team Assigned</option>
-                    <option value="approved" {{ old('status', $projectRequest->status) == 'approved' ? 'selected' : '' }}>Approved</option>
-                    <option value="rejected" {{ old('status', $projectRequest->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                </select>
-                @error('status')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            {{-- Tombol --}}
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-success px-4">
-                    <i class="fa-solid fa-save me-1"></i> Simpan Perubahan
-                </button>
-            </div>
-        </form>
-    </div>
+        {{-- Tombol Submit --}}
+        <div class="flex justify-end">
+            <button type="submit"
+                class="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition">
+                💾 Simpan Perubahan
+            </button>
+        </div>
+    </form>
 </div>
 @endsection

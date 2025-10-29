@@ -6,6 +6,8 @@ use App\Models\Karyawan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Karyawan\UpdateKaryawanRequest;
+use App\Http\Requests\Karyawan\StoreKaryawanRequest;
 
 class KaryawanController extends Controller
 {
@@ -16,7 +18,7 @@ class KaryawanController extends Controller
     {
         //
         $karyawans = Karyawan::with('user')->paginate(10);
-        return view('karyawans.index', compact('karyawans'));
+        return view('manager.karyawans.index', compact('karyawans'));
     }
 
     /**
@@ -25,33 +27,35 @@ class KaryawanController extends Controller
     public function create()
     {
         //
-        // $karyawans = User::doesntHave('karyawan')->get();
-        return view('karyawans.create');
+        return view('manager.karyawans.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreKaryawanRequest $request)
     {
         //
+        $validatedData = $request->validated();
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
             'password' => bcrypt($request->password),
         ]);
 
-        $user->assignRole('karyawan');
+          if (method_exists($user, 'assignRole')) {
+             $user->assignRole('karyawan');
+        }
 
         Karyawan::create([
             'user_id' => $user->id,
             'name' => $user->name,
-            'nik' => $request->nik,
-            'phone' => $request->phone,
-            'jabatan' => $request->jabatan,
-            'job_title' => $request->job_title,
-            'cost' => $request->cost,
+            'nik' => $validatedData['nik'],
+            'jabatan' => $validatedData['jabatan'],
+            'phone' => $validatedData['phone'],
+            'job_title' => $validatedData['job_title'],
+            'cost' => $validatedData['cost'],
         ]);
 
         return redirect()->route('manager.karyawans.index')->with('success', 'Karyawan sukses ditambahkan');
@@ -72,20 +76,44 @@ class KaryawanController extends Controller
     public function edit(Karyawan $karyawan)
     {
         //
-        return view('karyawans.edit', compact('karyawan'));
+        return view('manager.karyawans.edit', compact('karyawan'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Karyawan $karyawan)
-    {
-        $karyawan->update($request->validated()); // Gunakan validated() untuk data yang sudah bersih
+    public function update(UpdateKaryawanRequest $request, Karyawan $karyawan)
+{
+    $user = $karyawan->user;
 
-        $user = $karyawan->user;
-        $user->syncRoles('karyawan');
-        return redirect()->route('karyawans.index')->with('success', 'Update Berhasil');
+    // 🔹 Update tabel users
+    $userData = $request->only(['name', 'email', 'password']);
+    $userData = array_filter($userData, fn($value) => !is_null($value) && $value !== '');
+
+    if (isset($userData['password'])) {
+        $userData['password'] = bcrypt($userData['password']);
     }
+
+    if (!empty($userData)) {
+        $user->update($userData);
+    }
+
+    // 🔹 Update tabel karyawans
+    $karyawanData = $request->only(['name', 'nik', 'phone', 'job_title', 'cost', 'jabatan']);
+    $karyawanData = array_filter($karyawanData, fn($value) => !is_null($value) && $value !== '');
+
+    if (!empty($karyawanData)) {
+        $karyawan->update($karyawanData);
+    }
+
+    // 🔹 Pastikan role tetap 'karyawan'
+    $user->syncRoles('karyawan');
+
+    return redirect()
+        ->route('manager.karyawans.index')
+        ->with('success', 'Data karyawan berhasil diperbarui!');
+}
+
     
     /**
      * Remove the specified resource from storage.

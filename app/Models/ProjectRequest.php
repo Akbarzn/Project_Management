@@ -27,7 +27,6 @@ class ProjectRequest extends Model
         return $this->belongsTo(Client::class);
     }
 
-    // app/Models/ProjectRequest.php
 public function projects()
 {
     return $this->hasMany(Project::class, 'request_id');

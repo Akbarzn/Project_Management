@@ -17,7 +17,10 @@ class Karyawan extends Model
 
     public function projects()
 {
-    return $this->belongsToMany(Project::class, 'karyawan_project');
+    return $this->belongsToMany(Project::class, 'karyawan_project','karyawan_id','project_id');
 }
 
+public function tasks(){
+    return $this->hasMany(Task::class);
+}
 }
