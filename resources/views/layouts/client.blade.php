@@ -11,7 +11,7 @@
     <div class="flex h-screen">
 
         {{-- Sidebar --}}
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+        {{-- <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
             <div class="px-6 py-4 text-2xl font-bold border-b border-gray-200">
                 Client Panel
             </div>
@@ -20,11 +20,7 @@
                    class="block px-4 py-2 rounded hover:bg-indigo-100 @if(request()->routeIs('clients.project-requests.*')) bg-indigo-200 font-semibold @endif">
                    Dashboard
                 </a>
-                {{-- <a href="{{ route('clients.project-requests.create') }}" 
-                   class="block px-4 py-2 rounded hover:bg-indigo-100 @if(request()->routeIs('clients.project-requests.create')) bg-indigo-200 font-semibold @endif">
-                   Buat Project Request
-                </a> --}}
-                {{-- Tambahkan menu lain sesuai kebutuhan --}}
+                <a href="{{ route('profile.edit') }}">Edit profile</a>
             </nav>
             <div class="px-6 py-4 border-t border-gray-200">
                 <form method="POST" action="{{ route('logout') }}">
@@ -34,7 +30,9 @@
                     </button>
                 </form>
             </div>
-        </aside>
+        </aside> --}}
+
+        @include('layouts.sidebar')
 
         {{-- Konten Utama --}}
         <main class="flex-1 p-6 overflow-auto">

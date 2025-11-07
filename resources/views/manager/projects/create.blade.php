@@ -1,26 +1,30 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mx-auto p-4">
-    <h2 class="text-3xl font-bold mb-6 text-gray-800">Approve & Konfigurasi Project</h2>
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">Approve Project</h2>
 
     <div class="bg-white p-8 shadow-xl rounded-lg">
         <form action="{{ route('manager.projects.store') }}" method="POST">
             @csrf
             <input type="hidden" name="request_id" value="{{ $request->id }}">
 
-            {{-- Informasi Project Request --}}
-            <div class="mb-6 border-b pb-4">
-                <p class="text-xl font-semibold text-blue-600 mb-2">{{ $request->client->name }}</p>
-                <p class="text-gray-700">Deskripsi: {{ $request->description }}</p>
+            <div class="flex gap-4">
+                <div class="mb-6 border-b pb-4">
+                    <p class="text-xl font-semibold text-blue-600 mb-2">Client : {{ $request->client->name }}</p>
+                    <div class="flex gap-6">
+                        <p class="text-gray-700">Nama Project: {{ $request->name_project }}</p>
+                        <p class="text-gray-700">Deskripsi: {{ $request->description }}</p>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                {{-- Nama Project --}}
+                {{-- kategori --}}
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Project</label>
+                    <label class="block text-sm font-medium text-gray-700">Kategori Project</label>
                     <input type="text" name="project_name"
-                        value="{{ old('project_name', $request->project_name ?? $request->kategori) }}"
+                        value="{{ old('project_name', $request->kategori ?? $request->kategori) }}"
                         required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
                     @error('project_name')
@@ -28,7 +32,7 @@
                     @enderror
                 </div>
 
-                {{-- Tanggal Mulai --}}
+                {{-- start project --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
                     <input type="date" name="start_date_project"
@@ -40,7 +44,7 @@
                     @enderror
                 </div>
 
-                {{-- Tanggal Selesai --}}
+                {{-- finish project --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
                     <input type="date" name="finish_date_project"
@@ -53,8 +57,8 @@
                 </div>
             </div>
 
-            {{-- Penugasan Karyawan --}}
-            <h3 class="text-xl font-semibold mb-4 text-gray-800">Penugasan Karyawan (5 Peran Wajib)</h3>
+            {{-- karyawan task --}}
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Task Karyawan</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
                 @foreach($requiredRoles as $index => $role)
                     <div>

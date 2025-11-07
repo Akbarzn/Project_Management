@@ -15,24 +15,27 @@ class ProjectRequestController extends Controller
     public function index(Request $request){
         // ->where('status', 'pending')
         $status = $request->query('status', 'pending');
-        $request = ProjectRequest::with('client')
+        $data = ProjectRequest::with('client')
         ->when($status, fn($q) => $q->where('status', $status))
         ->orderBy('created_at', 'desc')
         ->paginate(10);
-        return view('manager.project-request.index',compact('request'));
+        return view('manager.project-request.index',compact('data','status'));
     }
-    public function create(){
+    public function create(Request $request, ProjectRequest $projectRequest){
         $clients = CLient::all(['id','name']);
         $ticketNumber = $this->generateTiket();
-        return view('manager.project-request.create',compact('clients','ticketNumber'));
+
+        $selectedClient = $request->query('client_id')
+        ? Client::find(request('client_id'))
+        : $projectRequest->client;
+
+        return view('manager.project-request.create',compact('clients','ticketNumber', 'projectRequest', 'selectedClient'));
     }
 
     public function show($id)
 {
-    // ambil data project request berdasarkan ID
-    $request = \App\Models\ProjectRequest::with('client')->findOrFail($id);
+    $request = ProjectRequest::with('client')->findOrFail($id);
 
-    // tampilkan view untuk detailnya
     return view('manager.project-request.show', compact('request'));
 }
 
@@ -52,9 +55,15 @@ class ProjectRequestController extends Controller
         return redirect()->route('manager.project-request.index')->with('success', 'Project request berhasil dibuat');
     }
 
-    public function edit(ProjectRequest $projectRequest){
+    public function edit(ProjectRequest $projectRequest, Request $request){
         $clients = Client::all(['id','name']);
-        return view('manager.project-request.edit', compact('projectRequest','clients'));
+        $ticketNumber = $this->generateTiket();
+
+
+        $selectedClient = $request->query('client_id')
+        ? Client::find(request('client_id'))
+        : $projectRequest->client;
+        return view('manager.project-request.edit', compact('projectRequest','clients','ticketNumber','selectedClient'));
     }
 
     public function update(UpdateProjectRequest $request, ProjectRequest $projectRequest){
@@ -85,17 +94,31 @@ class ProjectRequestController extends Controller
     } 
 
     private function generateTiket(){
-        $lastTiket = ProjectRequest::orderBy('tiket', 'desc')->first();
+        $currentYear = now()->format('Y');
+        $currentMounth = now()->format('m');
 
-        // ambil 3 digit terkahir
-        $newNumber = $lastTiket 
-            ? str_pad(((int) substr($lastTiket->tiket, -3)) + 1, 3, '0', STR_PAD_LEFT)
-            :'001';
+        // cari tiket yg tahun ini
+        $lastTiket = ProjectRequest::where('tiket', 'like', '%' .$currentYear)
+            ->orderBy('tiket', 'desc')
+            ->first();
 
-         $today = now()->format('dmY');
-         
-         return $today . $newNumber;
+        if($lastTiket){
+            $lastYear = substr($lastTiket->tiket, -4);
+            $lastNumber = (int) substr($lastTiket->tiket,0,3);
 
+        if($lastYear == $currentYear){
+            $newNumber = str_pad($lastNumber +1, 3, '0', STR_PAD_LEFT);
+        }else{
+            $newNumber = '001';
+        }
+        }else{
+            //kalo blm ada tiket sama sekali
+            $newNumber = '001';
+        }
+
+        $today = $currentMounth. $currentYear;
+
+        return $newNumber . $today;
     }
 
 }

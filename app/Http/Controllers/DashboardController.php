@@ -12,62 +12,24 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    //
-    // public function index(Request $request){
-    //     $totalKaryawan = Karyawan::count();
-    //     $totalClient = Client::count();
-    //     $totalProject = Project::count();
-    
-    // // return view ('manager.dashboard', compact('totalKaryawan','totalClient', 'totalProject'));
 
-    // // --- Data Project per Bulan (chart lama) ---
-    //     $projectsPerMonth = Project::select(
-    //         DB::raw('MONTH(start_date_project) as month'),
-    //         DB::raw('COUNT(*) as total')
-    //     )
-    //     ->whereYear('start_date_project', now()->year)
-    //     ->groupBy('month')
-    //     ->orderBy('month')
-    //     ->get();
-
-    //     $chartLabelsMonth = $projectsPerMonth->pluck('month')->map(fn($m) => date('F', mktime(0,0,0,$m,1)));
-    //     $chartDataMonth   = $projectsPerMonth->pluck('total');
-
-    //     // --- Data Project per Karyawan (chart baru) ---
-    //     $karyawans = Karyawan::all();
-
-    //     // Asumsi Project punya kolom karyawan_id
-    //    $projectsPerKaryawan = DB::table('karyawan_project')
-    // ->select('karyawan_id', DB::raw('COUNT(*) as total'))
-    // ->groupBy('karyawan_id')
-    // ->pluck('total', 'karyawan_id');
-
-
-    //     $chartLabelsKaryawan = $karyawans->map(fn($k) => $k->name);
-    //     $chartDataKaryawan   = $karyawans->map(fn($k) => $projectsPerKaryawan[$k->id] ?? 0);
-
-    //     return view('manager.dashboard', compact(
-    //         'totalKaryawan','totalClient','totalProject',
-    //         'chartLabelsMonth','chartDataMonth',
-    //         'chartLabelsKaryawan','chartDataKaryawan'
-    //     ));
-    // }
-
-    public function index(){
+    public function index()
+    {
         $totalKaryawan = Karyawan::count();
         $totalClient = Client::count();
         $totalProject = Project::count();
         $totalTask = Task::count();
 
-         // === Hitung Karyawan yang sudah & belum memiliki task ===
+        // === Hitung Karyawan yang sudah & belum memiliki task ===
         $sudahMemilikiTask = Karyawan::whereHas('tasks')->count();
         $belumMemilikiTask = Karyawan::whereDoesntHave('tasks')->count();
 
-          
-           $karyawans = Karyawan::withCount('projects')->get();
+
+        $karyawans = Karyawan::withCount('projects')->get();
 
         $names = $karyawans->pluck('name');
         $projectCounts = $karyawans->pluck('projects_count');
+        $idKaryawan = $karyawans->pluck('id');
 
         // === Data Project Progress per Role (TRANSFORMASI UTAMA) ===
         $projectData = Project::with(['projectRequest', 'tasks.karyawan'])
@@ -75,11 +37,11 @@ class DashboardController extends Controller
             ->map(function ($project) {
                 // 1. Ambil semua Task yang terkait dengan Project ini
                 $tasks = $project->tasks;
-                
+
                 // 2. Kelompokkan Task berdasarkan job_title Karyawan yang mengerjakannya
                 // Menggunakan groupBy pada collection tasks.
                 $rolesGrouped = $tasks->groupBy('karyawan.job_title');
-                
+
                 $roles = [];
 
                 foreach ($rolesGrouped as $jobTitle => $tasksByRole) {
@@ -108,41 +70,21 @@ class DashboardController extends Controller
                     'roles' => $roles,
                 ];
             });
-       
-        return view('manager.dashboard', compact('totalKaryawan', 'totalClient', 'totalProject', 'totalTask', 'names', 'projectCounts', 'projectData','sudahMemilikiTask','belumMemilikiTask')); 
+
+            $projects = Project::with(['client', 'projectRequest', 'karyawans', 'approver'])
+            ->latest()
+            ->get();
+
+        return view('manager.dashboard', compact('totalKaryawan', 'totalClient', 'totalProject', 'totalTask', 'names', 'projectCounts', 'projectData', 'sudahMemilikiTask', 'belumMemilikiTask', 'karyawans', 'idKaryawan','projects'));
     }
 
-     public function storeRequest(Request $request)
+
+    public function showKaryawanProject($id)
     {
-        $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'name_project' => 'required|string|max:255',
-            'kategori' => 'required|in:New Aplikasi,Update Aplikasi',
-            'description' => 'required|string',
-            'document' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:2048',
-        ]);
-
-        // Generate nomor tiket unik
-        $ticketNumber = 'RQ-' . now()->format('YmdHis'); 
-
-        // Upload dokumen
-        $documentPath = null;
-        if ($request->hasFile('document')) {
-            // Simpan file di storage/app/public/project-documents
-            $documentPath = $request->file('document')->store('project-documents', 'public');
-        }
-
-        ProjectRequest::create([
-            'client_id' => $validated['client_id'],
-            'ticket_number' => $ticketNumber,
-            'name_project' => $validated['name_project'],
-            'kategori' => $validated['kategori'],
-            'description' => $validated['description'],
-            'document_path' => $documentPath,
-            'status' => 'Pending', // Status awal
-        ]);
-
-        return redirect()->route('manager.dashboard')->with('success', 'Project Request berhasil dibuat atas nama client yang dipilih.');
+        $karyawan = Karyawan::findOrFail($id);
+        $projects = $karyawan->tasks()->with('project')->get(); // contoh relasi
+        return view('manager.karyawans.project', compact('karyawan', 'projects'));
     }
+
 }
 

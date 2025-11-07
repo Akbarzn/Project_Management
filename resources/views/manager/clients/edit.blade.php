@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('title', 'Edit Client')
 
@@ -35,7 +35,7 @@
                 <div>
                     <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Client</label>
                     <input type="text" name="name" id="name" value="{{ old('name', $client->name) }}" 
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror" 
+                        class="w-full borderborder-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror" 
                         required />
                 </div>
 
@@ -46,14 +46,14 @@
                     <div>
                         <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK</label>
                         <input type="text" name="nik" id="nik" value="{{ old('nik', $client->nik) }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('nik') border-red-500 @enderror" />
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('nik') border-red-500 @enderror" />
                     </div>
                     
                     {{-- Telepon --}}
                     <div>
                         <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon</label>
                         <input type="text" name="phone" id="phone" value="{{ old('phone', $client->phone) }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror" />
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror" />
                     </div>
                 </div>
 
@@ -61,7 +61,7 @@
                 <div>
                     <label for="kode_organisasi" class="block text-sm font-semibold text-gray-700 mb-1">Kode Organisasi</label>
                     <input type="text" name="kode_organisasi" id="kode_organisasi" value="{{ old('kode_organisasi', $client->kode_organisasi) }}" 
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('kode_organisasi') border-red-500 @enderror" />
+                        class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('kode_organisasi') border-red-500 @enderror" />
                 </div>
 
                 <div class="pt-6 flex justify-between items-center">

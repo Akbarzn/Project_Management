@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('title', 'Users')
 
@@ -29,7 +29,7 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-indigo-600 text-white">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">ID User</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Nama</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Email</th>
                         <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Role</th>
@@ -38,21 +38,21 @@
                 </thead>
                 
                 <tbody class="bg-white divide-y divide-gray-100">
-                    @foreach($users as $u)
+                    @foreach($users as $user)
                         <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $u->id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $u->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $u->email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $u->getRoleNames()->first() ?? '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">{{ $user->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $user->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->getRoleNames()->first() ?? '-' }}</td>
                             
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
                                 
-                                <a href="{{ route('manager.users.edit', $u) }}"
+                                <a href="{{ route('manager.users.edit', $user) }}"
                                    class="inline-block bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-md text-xs font-semibold transition duration-150 shadow-sm">
                                     Edit
                                 </a>
                                 
-                                <form action="{{ route('manager.users.destroy', $u) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini? Tindakan ini permanen.')">
+                                <form action="{{ route('manager.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini? Tindakan ini permanen.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 

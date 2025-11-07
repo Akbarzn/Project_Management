@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
@@ -14,6 +14,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-indigo-600 text-white">
                 <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">No</th>
                     <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Nama Project</th>
                     <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Client</th>
                     <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Status</th>
@@ -25,8 +26,15 @@
             </thead>
 
             <tbody class="bg-white divide-y divide-gray-100">
-                @forelse($projects as $project)
+                @forelse($projects as $index => $project)
                     <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="whitespace-nowrap txt-sm text-center">
+                            @if(method_exists($project, 'firstitem'))
+                            {{ $project->firsItem() + $index }}
+                            @else
+                            {{ $loop->iteration }}
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-800">
                             {{ $project->projectRequest->name_project ?? $project->projectRequest->name_project }}
                         </td>

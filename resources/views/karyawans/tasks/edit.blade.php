@@ -3,7 +3,7 @@
 @section('title', 'Update Progress Task')
 
 @section('content')
-<div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+<div class="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">
     <h2 class="text-2xl font-bold text-indigo-700 mb-6">Update Progress Task</h2>
 
     <div class="mb-6">
@@ -50,14 +50,12 @@
 
 
 
-        {{-- Info Otomatis --}}
         <div class="mb-6 text-sm text-gray-600 bg-gray-50 p-3 rounded">
             <p><strong>Tanggal Mulai Task:</strong> {{ $task->start_date_task ?? '-' }}</p>
             <p><strong>Tanggal Selesai Task:</strong> {{ $task->finish_date_task ?? '-' }}</p>
             <p><strong>Terakhir Diperbarui:</strong> {{ $task->updated_at->format('d M Y, H:i') }}</p>
         </div>
 
-        {{-- Tombol --}}
         <div class="flex justify-end gap-3">
             <a href="{{ route('karyawan.tasks.index') }}"
                class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">

@@ -15,20 +15,21 @@
         </div>
 
         {{-- Project Info --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4   text-gray-700">
+        {{-- <div class=" gap-4 flex justify-center items-center  text-gray-700"> --}}
             <div>
-                <p class="font-semibold">Nomor Tiket:</p>
+                <p class="font-semibold font">Nomor Tiket:</p>
                 <p>{{ $projectRequest->tiket }}</p>
-            </div>
-
-            <div>
-                <p class="font-semibold">Nama Project:</p>
-                <p>{{ $projectRequest->name_project }}</p>
             </div>
 
             <div>
                 <p class="font-semibold">Kategori:</p>
                 <p>{{ $projectRequest->kategori }}</p>
+            </div>
+
+            <div>
+                <p class="font-semibold">Nama Project:</p>
+                <p>{{ $projectRequest->name_project }}</p>
             </div>
 
             <div>

@@ -59,19 +59,16 @@ class KaryawanSeeder extends Seeder
             ],
         ];
 
-        // Buat setiap data user dan karyawan yang berkorespondensi
         foreach ($employees as $employeeData) {
-            // 1. Buat email unik berdasarkan nama (misal: budi.supervisor@company.com)
             $email = strtolower(str_replace(' ', '.', $employeeData['name'])) . '@company.com';
 
-            // 2. Buat record User
             $user = User::create([
                 'name' => $employeeData['name'],
                 'email' => $email,
-                'password' => Hash::make('password'), // Password default untuk semua user: 'password'
+                'password' => Hash::make('password'),
+                'potho_profile' => 'images/default.jpg'
             ]);
 
-            // 3. Buat record Karyawan dan tautkan ke user yang baru dibuat
             Karyawan::create(array_merge($employeeData, [
                 'user_id' => $user->id,
             ]));

@@ -19,7 +19,8 @@ class UserSeeder extends Seeder
         $manager = User::create([
             'name' => 'Manager',
             'email' => 'manager@example.com',
-            'password' => Hash::make('manager')
+            'password' => Hash::make('manager'),
+            'potho_profile' => 'images/default.jpg',
         ]);
         $manager->assignRole('manager');
 

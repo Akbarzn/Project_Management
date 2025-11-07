@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('content')
 <div class="max-w-6xl mx-auto p-6 space-y-8">
@@ -26,7 +26,6 @@
                 Rp {{ number_format($project->total_cost, 0, ',', '.') }}
             </p>
             <span class="text-sm text-red-400">Data diperbarui otomatis setiap kali karyawan update progress task.</span>
-             {{-- 📈 Progress Keseluruhan Proyek --}}
             @php
                 $totalProgress = $project->tasks->count() > 0 
                     ? round($project->tasks->avg('progress'), 2)
@@ -38,8 +37,8 @@
                 </p>
                 <div class="w-full bg-gray-200 rounded-full h-4">
                     <div class="h-4 rounded-full transition-all duration-500 
-                        @if($totalProgress == 100) bg-green-500 
-                        @elseif($totalProgress >= 50) bg-blue-500 
+                        @if($totalProgress == 100)  
+                        @elseif($totalProgress >= 50) 
                         @else bg-yellow-400 @endif"
                         style="width: {{ $totalProgress }}%">
                     </div>
@@ -98,8 +97,8 @@
                             <td class="text-center px-4 py-2 w-32">
                                 <div class="w-full bg-gray-200 rounded-full h-3">
                                     <div class="h-3 rounded-full
-                                        @if($task->progress == 100) bg-green-500
-                                        @elseif($task->progress >= 50) bg-blue-500
+                                        @if($task->progress == 100) 
+                                        @elseif($task->progress >= 50)
                                         @else bg-yellow-400 @endif"
                                         style="width: {{ $task->progress }}%">
                                     </div>
@@ -111,9 +110,9 @@
                             <td class="text-center px-4 py-2">
                                 <span class="
                                     px-2 py-1 rounded text-white text-xs font-small
-                                    @if($task->status === 'complete') bg-green-500
-                                    @elseif($task->status === 'inwork') bg-blue-500
-                                    @elseif($task->status === 'pending') bg-gray-400
+                                    @if($task->status === 'complete') 
+                                    @elseif($task->status === 'inwork') 
+                                    @elseif($task->status === 'pending') 
                                     @else bg-yellow-400 @endif
                                 ">
                                     {{ ucfirst($task->status) }}
@@ -147,7 +146,6 @@
 </div>
 @endsection
 
-{{-- Auto-refresh tiap 1 menit --}}
 <script>
     setInterval(() => window.location.reload(), 60000);
 </script>

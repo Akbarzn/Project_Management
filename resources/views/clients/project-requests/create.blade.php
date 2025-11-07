@@ -1,4 +1,4 @@
-@extends('layouts.client')
+@extends('layouts.app')
 
 @section('content')
 <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -7,49 +7,49 @@
     <form action="{{ route('clients.project-requests.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- Nomor Tiket --}}
+        {{-- tiket --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nomor Tiket</label>
             <input type="text" value="{{ $ticketNumber }}" readonly
                 class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        {{-- Nama Client --}}
+        {{-- nama --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nama</label>
             <input type="text" value="{{ $client->name }}" readonly
                 class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        {{-- Nik Client --}}
+        {{-- nik --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nik</label>
             <input type="text" value="{{ $client->nik }}" readonly
             class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        {{-- Kode Organisasi Client --}}
+        {{-- kode rganisasi--}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium">Kode Organisasi</label>
             <input type="text" value="{{ $client->kode_organisasi }}" readonly
             class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        {{-- Phone Client --}}
+        {{-- phone --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium">Phone</label>
             <input type="text" value="{{ $client->phone }}" readonly
             class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100">
         </div>
 
-        {{-- Nama Project --}}
+        {{-- nama project --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Nama Project</label>
             <input type="text" name="name_project" required
                 class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
-        {{-- Kategori --}}
+        {{-- kategori --}}
         <div class="mb-4">
             <span class="block text-gray-700 font-medium mb-2">Kategori</span>
             <label class="inline-flex items-center mr-4">
@@ -64,14 +64,14 @@
             </label>
         </div>
 
-        {{-- Deskripsi --}}
+        {{-- deskripsi --}}
         <div class="mb-4">
             <label for="description" class="block text-gray-700 font-medium mb-1">Deskripsi</label>
             <textarea name="description" id="description" rows="4" required
                 class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
 
-        {{-- Upload Dokumen --}}
+        {{-- dokumen --}}
         <div class="mb-4">
             <label for="document" class="block text-gray-700 font-medium mb-1">Upload Dokumen (opsional)</label>
             <input type="file" name="document" id="document"

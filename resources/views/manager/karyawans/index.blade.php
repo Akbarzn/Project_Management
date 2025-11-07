@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('content')
 
@@ -24,7 +24,7 @@
     @endif
 
     @if($karyawans->count() > 0)
-        <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <div class="overflow-x-auto bg-white shadow-lg rounded-lg ">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-indigo-600 text-white">
                     <tr>
@@ -38,11 +38,9 @@
                     </tr>
                 </thead>
                 
-                {{-- Table Body --}}
                 <tbody class="bg-white divide-y divide-gray-100">
                     @foreach($karyawans as $index => $karyawan)
                         <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                            {{-- Menggunakan pagination index jika ada, jika tidak, pakai loop iteration --}}
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                 @if (method_exists($karyawans, 'firstItem'))
                                     {{ $karyawans->firstItem() + $index }}

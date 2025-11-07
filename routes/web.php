@@ -10,23 +10,9 @@ use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Client\ProjectRequestController;
 use App\Http\Controllers\Manager\ProjectRequestController as ManagerProjectRequestController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\Manager\TaskController as ManagerTaskController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Semua route utama aplikasi dikelompokkan berdasarkan role:
-| - Manager
-| - Karyawan
-| - Client
-| dan otomatis diarahkan ke dashboard sesuai role saat login.
-|
-*/
 
-// ========================
-// 🔹 ROOT & DASHBOARD
-// ========================
 Route::get('/', fn() => view('auth.login'));
 
 Route::get('/dashboard', function () {
@@ -34,25 +20,20 @@ Route::get('/dashboard', function () {
     $role = $user->getRoleNames()->first();
 
     return match ($role) {
-        'manager'  => redirect()->route('manager.dashboard'),
+        'manager' => redirect()->route('manager.dashboard'),
         'karyawan' => redirect()->route('karyawan.tasks.index'),
-        'client'   => redirect()->route('clients.project-requests.index'),
-        default    => view('dashboard'),
+        'client' => redirect()->route('clients.project-requests.index'),
+        default => view('dashboard'),
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// ========================
-// 🔹 PROFILE (semua role)
-// ========================
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ========================
-// 🔹 MANAGER ROUTES
-// ========================
+// manager
 Route::middleware(['auth', 'role:manager'])
     ->prefix('manager')
     ->name('manager.')
@@ -69,18 +50,17 @@ Route::middleware(['auth', 'role:manager'])
         Route::get('projects/create/{requestId}', [ProjectController::class, 'create'])
             ->name('projects.create.from.request');
         Route::resource('projects', ProjectController::class);
-            // Rute untuk Project Request Manager
-
-    Route::resource('project-request', ManagerProjectRequestController::class);
+        
+        // Rute untuk Project Request Manager
+        Route::resource('tasks', ManagerTaskController::class);
+        Route::resource('project-request', ManagerProjectRequestController::class);
+        Route::get('/karyawan/{id}/project', [DashboardController::class, 'showKaryawanProject'])->name('karyawans.project');
     });
 
-// ========================
-// 🔹 KARYAWAN ROUTES
-// ========================
 Route::middleware(['auth', 'role:karyawan'])
     ->prefix('karyawan')
     ->name('karyawan.')
-    ->group(function () {
+->group(function () {
         // Task Management
         Route::resource('tasks', TaskController::class);
 
@@ -89,9 +69,6 @@ Route::middleware(['auth', 'role:karyawan'])
         Route::delete('tasks/logs/{log}', [TaskController::class, 'destroyLog'])->name('tasks.logs.destroy');
     });
 
-// ========================
-// 🔹 CLIENT ROUTESb
-// ========================
 Route::middleware(['auth', 'role:client'])
     ->prefix('clients')
     ->name('clients.')
@@ -99,9 +76,9 @@ Route::middleware(['auth', 'role:client'])
         Route::resource('project-requests', ProjectRequestController::class);
     });
 
-    Route::get('/manager/dashboard', [DashboardController::class, 'index'])
-        ->name('manager.dashboard')
-        ->middleware('role:manager');
+Route::get('/manager/dashboard', [DashboardController::class, 'index'])
+    ->name('manager.dashboard')
+    ->middleware('role:manager');
 // ========================
 // 🔹 AUTH ROUTES (Laravel Breeze / Fortify)
 // ========================

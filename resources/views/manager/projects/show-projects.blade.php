@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mx-auto p-4">
@@ -22,36 +22,36 @@
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-                @foreach($requests as $r)
+                @foreach($requests as $requestProject)
                 <tr class="border-b border-gray-200 hover:bg-gray-100 text-center">
                     <td class="py-3 px-6 whitespace-nowrap text-center">
-                        <span class="font-medium">{{ $r->tiket }}</span>
+                        <span class="font-medium">{{ $requestProject->tiket }}</span>
                     </td>
                     <td class="py-3 px-6 whitespace-nowrap text-center">
-                        <span class="font-medium">{{ $r->kategori }}</span>
+                        <span class="font-medium">{{ $requestProject->kategori }}</span>
                     </td>
                     <td class="py-3 px-6 whitespace-nowrap text-center">
-                        <span class="font-medium">{{ $r->client->name }}</span>
+                        <span class="font-medium">{{ $requestProject->client->name }}</span>
                     </td>
-                    <td class="py-3 px-6 text-left max-w-lg truncate" title="{{ $r->description }}">
-                    {{ Str::limit($r->description, 100) }} 
+                    <td class="py-3 px-6 text-left max-w-lg truncate" title="{{ $requestProject->description }}">
+                    {{ Str::limit($requestProject->description, 100) }} 
                     </td>
                     <td class="py-3 px-6 text-center">
                         <span class="relative inline-block px-3 py-1 font-semibold text-orange-900 leading-tight">
                             <span aria-hidden class="absolute inset-0 bg-orange-200 opacity-50 rounded-full"></span>
-                            <span class="relative">{{ $r->status }}</span>
+                            <span class="relative">{{ $requestProject->status }}</span>
                         </span>
                     </td>
                     <td class="py-3 px-6 whitespace-nowrap text-center">
                         {{-- <span class="font-medium">{{ $r->document }}</span> --}}
-                        @if($r->document)
-                        <a class="text-blue-500 font-medium font-bold" href="{{ asset('storage/' . $r->document) }}" target="_blank">Lihat Document</a>
+                        @if($requestProject->document)
+                        <a class="text-blue-500 " href="{{ asset('storage/' . $requestProject->document) }}" target="_blank">Lihat Document</a>
                         @else
                         <p>Tidak Ada Document</p>
                         @endif
                     </td>
                     <td class="py-3 px-6 text-center">
-                        <a href="{{ route('manager.projects.create.from.request', ['requestId' => $r->id]) }}" 
+                        <a href="{{ route('manager.projects.create.from.request', ['requestId' => $requestProject->id]) }}" 
                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
                             Approve
                         </a>

@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('title', 'Tambah User Baru')
 
@@ -9,7 +9,7 @@
         
         <div class="bg-indigo-700 py-4 px-6 flex items-center justify-between">
             <h2 class="text-2xl font-semibold text-white">
-                <i class="fas fa-user-plus mr-3"></i> {{-- Ikon Font Awesome untuk tambah user --}}
+                <i class="fas fa-user-plus mr-3"></i> 
                 Tambah User Baru
             </h2>
         </div>
@@ -35,7 +35,7 @@
                     <div>
                         <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama</label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror" 
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror" 
                             required />
                     </div>
 
@@ -43,20 +43,19 @@
                     <div>
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                         <input type="email" name="email" id="email" value="{{ old('email') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror" 
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror" 
                             required />
                     </div>
                 </div>
 
                 <hr class="border-gray-200 pt-4">
 
-                {{-- Password & Konfirmasi Password Group (Grid 2 Kolom) --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- Password --}}
                     <div>
                         <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
                         <input type="password" name="password" id="password" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('password') border-red-500 @enderror" 
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('password') border-red-500 @enderror" 
                             required />
                     </div>
 
@@ -76,7 +75,7 @@
                     <div>
                         <label for="role" class="block text-sm font-semibold text-gray-700 mb-1">Role</label>
                         <select name="role" id="role" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-white focus:ring-indigo-500 focus:border-indigo-500 @error('role') border-red-500 @enderror" 
+                            class="w-full border  rounded-lg px-4 py-2.5 bg-white focus:ring-indigo-500 focus:border-indigo-500 @error('role') border-red-500 @enderror" 
                             required>
                             <option value="">Pilih Role</option>
                             <option value="karyawan" {{ old('role') == 'karyawan' ? 'selected' : '' }}>Karyawan</option>

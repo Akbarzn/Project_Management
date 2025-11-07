@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('title', 'Tambah Client Baru')
 
@@ -34,7 +34,7 @@
                     <div>
                         <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama</label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror" 
+                            class="w-full border rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror" 
                             required />
                     </div>
 
@@ -42,7 +42,7 @@
                     <div>
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                         <input type="email" name="email" id="email" value="{{ old('email') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror" 
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror" 
                             required />
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                 <div>
                     <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
                     <input type="password" name="password" id="password" 
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('password') border-red-500 @enderror" 
+                        class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('password') border-red-500 @enderror" 
                         required />
                 </div>
                 
@@ -62,7 +62,7 @@
                     <div>
                         <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK</label>
                         <input type="text" name="nik" id="nik" value="{{ old('nik') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('nik') border-red-500 @enderror" 
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('nik') border-red-500 @enderror" 
                             required />
                     </div>
 
@@ -70,7 +70,7 @@
                     <div>
                         <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon</label>
                         <input type="text" name="phone" id="phone" value="{{ old('phone') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror" />
+                            class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror" />
                     </div>
                 </div>
 
@@ -78,7 +78,7 @@
                 <div>
                     <label for="kode_organisasi" class="block text-sm font-semibold text-gray-700 mb-1">Kode Organisasi</label>
                     <input type="text" name="kode_organisasi" id="kode_organisasi" value="{{ old('kode_organisasi') }}" 
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('kode_organisasi') border-red-500 @enderror" />
+                        class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('kode_organisasi') border-red-500 @enderror" />
                 </div>
 
                 <div class="pt-6 flex justify-between items-center">

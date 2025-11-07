@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TaskLog;
+use App\Models\Task;
 
 class TaskLogController extends Controller
 {
@@ -41,6 +43,7 @@ class TaskLogController extends Controller
      */
     public function show(string $id)
     {
+        $task = Task::findOrFail($id);
           $logs = TaskLog::with('user')
             ->where('task_id', $task->id)
             ->orderBy('created_at', 'desc')

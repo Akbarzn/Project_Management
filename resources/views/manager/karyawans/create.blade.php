@@ -1,11 +1,11 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('title', 'Tambah Karyawan')
 
 @section('content')
 
 @php
-    // Daftar Job Title yang diminta
+    // daftar job title
     $requiredRoles = [
         'Analisis Proses Bisnis',
         'Database FUnctional',

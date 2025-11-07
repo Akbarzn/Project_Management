@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('title', 'Edit Karyawan')
 
@@ -40,7 +40,6 @@
                             required />
                     </div>
 
-                    {{-- NIK & Telepon Group --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- NIK --}}
                         <div>
@@ -65,7 +64,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Job Title --}}
                         <select name="job_title" id="job_title"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror"
                             required>
                             <option value="">-- Pilih Jabatan --</option>
                             @php
@@ -85,6 +84,13 @@
                             @endforeach
                         </select>
 
+                        {{-- jabatan --}}
+                        <div class="mb-4">
+                            <label for="jabatan" class="block text-sm font-semibold text-gray-700 mb-1">Jabatan</label>
+                            <input type="text" name="jabatan" value="{{ old('jabatan', $karyawan->jabatan) }}"
+                            class="w-full border px-3 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                        </div>
+
 
                         {{-- Biaya --}}
                         <div>
@@ -92,7 +98,7 @@
                                 (Rp)</label>
                             <input type="number" step="0.01" name="cost" id="cost"
                                 value="{{ old('cost', $karyawan->cost) }}"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
+                                class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
                                 required />
                         </div>
                     </div>

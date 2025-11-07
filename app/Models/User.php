@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'potho_profile'
     ];
 
     /**
@@ -33,6 +34,14 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected static function booted(){
+        static::creating(function($user){
+            if(!$user->potho_profile){
+                $user->potho_profile = 'images/default.jpg';
+            }
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

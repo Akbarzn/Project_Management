@@ -11,27 +11,28 @@
 <div class="flex min-h-screen">
     {{-- Sidebar --}}
     @include('layouts.sidebar')
+    {{-- <x-manager.sidebar></x-manager.sidebar> --}}
 
-    {{-- Konten utama --}}
+    {{-- head--}}
     <div class="flex-1 flex flex-col">
         {{-- Navbar --}}
         <nav class="bg-indigo-600 text-white shadow-md">
-            <div class="flex justify-between items-center px-6 py-3">
-                <h1 class="text-xl font-semibold">Panel Karyawan</h1>
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('karyawan.tasks.index') }}" class="hover:underline">Tugas Saya</a>
-                    <form method="POST" action="{{ route('logout') }}">
+            <div class="flex justify-end items-center px-6 py-3">
+                {{-- <h1 class="text-xl font-semibold">Panel Karyawan</h1> --}}
+                <div class="flex items-center gap- py-4 max-w-3xl">
+                    {{-- <a href="{{ route('karyawan.tasks.index') }}" class="hover:underline">Tugas Saya</a> --}}
+                    {{-- <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                             Logout
                         </button>
-                    </form>
+                    </form> --}}
                 </div>
             </div>
         </nav>
 
-        {{-- Konten halaman --}}
-        <main class="flex-1 px-6 py-8">
+        {{-- content--}}
+        <main class="flex-1 px-6 py-4">
             @yield('content')
         </main>
 

@@ -1,4 +1,4 @@
-@extends('layouts.manager')
+@extends('layouts.app')
 
 @section('content')
 
@@ -10,14 +10,12 @@
         @csrf
         @method('PUT')
         
-        {{-- Informasi Dasar Project --}}
         <div class="mb-6 border-b pb-4">
             <p class="text-xl font-semibold text-blue-600 mb-2">Client: {{ $project->client->name }}</p>
-            <p class="text-gray-700">Request ID: {{ $project->request_id }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {{-- Nama Project --}}
+            {{-- nama project --}}
             <div>
                 <label for="name_project" class="block text-sm font-medium text-gray-700">Nama Project</label>
                 <input type="text" name="name_project" id="name_project"
@@ -29,7 +27,7 @@
                 @enderror
             </div>
 
-            {{-- Tanggal Mulai --}}
+            {{-- start project --}}
             <div>
                 <label for="start_date_project" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
                 <input type="date" name="start_date_project" id="start_date_project"
@@ -41,7 +39,7 @@
                 @enderror
             </div>
 
-            {{-- Tanggal Selesai --}}
+            {{-- finish project --}}
             <div>
                 <label for="finish_date_project" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
                 <input type="date" name="finish_date_project" id="finish_date_project"
@@ -54,7 +52,7 @@
             </div>
         </div>
 
-        {{-- Penugasan Karyawan --}}
+        {{-- karyawan --}}
         <h3 class="text-xl font-semibold mb-4 text-gray-800">Penugasan Karyawan (5 Peran Wajib)</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
             @foreach($requiredRoles as $index => $role)
@@ -65,9 +63,9 @@
                         <option value="">Pilih {{ $role }}</option>
                         @foreach($karyawans->where('job_title', $role) as $karyawan)
                             @php
-                                // Cek apakah karyawan ini sudah pernah ditugaskan sebelumnya (dari database)
+                                // cek apa sudh dpt task
                                 $isSelected = in_array($karyawan->id, $selectedKaryawanIds);
-                                // Cek apakah ada nilai lama dari input form (untuk error validation)
+                                // cek apakah ada data lam
                                 $isOldSelected = old("karyawan_ids.$index") == $karyawan->id;
                             @endphp
                             <option value="{{ $karyawan->id }}" {{ $isOldSelected || $isSelected ? 'selected' : '' }}>

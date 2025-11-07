@@ -7,6 +7,7 @@ use App\Models\ProjectRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Client;
 
 class ProjectRequestController extends Controller
 {
@@ -23,7 +24,7 @@ class ProjectRequestController extends Controller
 {
     $user = auth()->user();
 
-    // Pastikan user adalah client
+    // cek apa user itu clinet
     if ($user->hasRole('client')) {
         $clientId = $user->client->id;
 
@@ -50,7 +51,6 @@ class ProjectRequestController extends Controller
     public function create()
     {
         // ambil data client yang sedang login
-        // $client = Auth::user()->client;
         $user = Auth::user();
         $isManager = $user->hasRole('manager');
         $client = null;
@@ -86,7 +86,7 @@ class ProjectRequestController extends Controller
             $newNumber = '001';
         }
 
-        return $today . $newNumber;
+        return  $newNumber . $today ;
     }
 
     /**
@@ -94,7 +94,6 @@ class ProjectRequestController extends Controller
      */
     public function store(Request $request)
     {
-
 
         $client = Auth::user()->client;
         $filePath = null;
@@ -142,16 +141,16 @@ class ProjectRequestController extends Controller
     public function update(Request $request, ProjectRequest $projectRequest)
     {
         if ($request->hasFile('document')) {
-            if ($projectRequest->upload_file) {
-                Storage::disk('public')->delete($projectRequest->upload_file);
+            if ($projectRequest->document) {
+                Storage::disk('public')->delete($projectRequest->document);
             }
-            $projectRequest->upload_file = $request->file('document')->store('project_documents', 'public');
+            $projectRequest->document = $request->file('document')->store('project_documents', 'public');
         }
 
         $projectRequest->update([
             'kategori' => $request->kategori,
             'description' => $request->description,
-            'document' => $projectRequest->upload_file,
+            'document' => $projectRequest->document,
         ]);
 
         return redirect()->route('clients.project-requests.index')->with('success', 'Project request berhasil diperbarui.');
