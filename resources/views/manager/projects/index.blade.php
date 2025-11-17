@@ -1,98 +1,168 @@
 @extends('layouts.app')
+@section('title', 'Daftar Project')
 
 @section('content')
-<div class="container mx-auto px-6 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">Daftar Project</h2>
-        <a href="{{ route('manager.projects.requests') }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+
+<div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+
+    {{-- HEADER --}}
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-3xl font-extrabold text-gray-800 flex items-center gap-3">
+                <i class="fas fa-folder-open text-indigo-600"></i>
+                Daftar Project
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">
+                Kelola seluruh data project.
+            </p>
+        </div>
+
+        {{-- <a href="{{ route('manager.projects.requests') }}"
+           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg shadow-indigo-300/40 transition">
+            <i class="fas fa-file-alt mr-2"></i>
             Lihat Request Project
-        </a>
+        </a> --}}
     </div>
 
-    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-indigo-600 text-white">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Nama Project</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Client</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Status</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Disetujui Oleh</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Tanggal Mulai</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Tanggal Selesai</th>
-                    <th scope="col" class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
+    {{-- TABEL PROJECT --}}
+    @if($projects->count() > 0)
 
-            <tbody class="bg-white divide-y divide-gray-100">
-                @forelse($projects as $index => $project)
-                    <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                        <td class="whitespace-nowrap txt-sm text-center">
-                            @if(method_exists($project, 'firstitem'))
-                            {{ $project->firsItem() + $index }}
-                            @else
-                            {{ $loop->iteration }}
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-800">
-                            {{ $project->projectRequest->name_project ?? $project->projectRequest->name_project }}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-700">{{ $project->client->name ?? '-' }}</td>
-                        <td class="px-6 py-4">
-                            @if($project->status === 'ongoing')
-                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">
-                                    Ongoing
-                                </span>
-                            @elseif($project->status === 'completed')
-                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
-                                    Completed
-                                </span>
-                            @else
-                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded-full">
+        <div class="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden">
+            
+            <table class="min-w-full text-sm">
+                <thead class="bg-indigo-600 text-white uppercase text-xs tracking-wider">
+                    <tr>
+                        <th class="px-4 py-3 text-center w-12">No</th>
+                        <th class="px-4 py-3 text-left">Nama Project</th>
+                        <th class="px-4 py-3 text-left">Client</th>
+                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Disetujui</th>
+                        <th class="px-4 py-3 text-left">Start</th>
+                        <th class="px-4 py-3 text-left w-32">Finish</th>
+                        <th class="px-4 py-3 text-center w-32">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200">
+
+                    @foreach ($projects as $project)
+
+                        <tr class="hover:bg-gray-50 transition">
+
+                            {{-- NOMOR --}}
+                            <td class="px-4 py-3 text-center">
+                                {{ $projects->firstItem() + $loop->index }}
+                            </td>
+
+                            {{-- NAMA PROJECT --}}
+                            <td class="px-4 py-3 font-semibold text-gray-800">
+                                {{ $project->projectRequest->name_project ?? '-' }}
+                            </td>
+
+                            {{-- CLIENT --}}
+                            <td class="px-4 py-3 text-gray-700">
+                                {{ $project->client->name ?? '-' }}
+                            </td>
+
+                            {{-- STATUS --}}
+                            <td class="px-4 py-3">
+                                @php
+                                    $statusClass = match($project->status) {
+                                        'ongoing'   => 'bg-yellow-100 text-yellow-800',
+                                        'completed' => 'bg-green-100 text-green-800',
+                                        default     => 'bg-gray-100 text-gray-800'
+                                    };
+                                @endphp
+
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $statusClass }}">
                                     {{ ucfirst($project->status) }}
                                 </span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-700">{{ $project->approver->name ?? '-' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">{{ $project->start_date_project ?? '-' }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-700">{{ $project->finish_date_project ?? '-' }}</td>
+                            </td>
 
-                        <!-- Aksi -->
-                        <td class="px-6 py-4">
-                            <div class="flex justify-center space-x-2">
-                                <!-- Detail -->
-                                <a href="{{ route('manager.projects.show', $project->id) }}"
-                                   class="flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg shadow transition duration-200">
-                                    <i class="fas fa-eye mr-1"></i> Detail
-                                </a>
+                            {{-- APPROVER --}}
+                            <td class="px-4 py-3 text-gray-700">
+                                {{ $project->approver->name ?? '-' }}
+                            </td>
 
-                                <!-- Edit -->
-                                <a href="{{ route('manager.projects.edit', $project->id) }}"
-                                   class="flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold rounded-lg shadow transition duration-200">
-                                    <i class="fas fa-edit mr-1"></i> Edit
-                                </a>
+                            {{-- START DATE --}}
+                            <td class="px-4 py-3 text-gray-700">
+                                {{ $project->start_date_project ?? '-' }}
+                            </td>
 
-                                <!-- Hapus -->
-                                <form action="{{ route('manager.projects.destroy', $project->id) }}" method="POST"
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus project ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="flex items-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg shadow transition duration-200">
-                                        <i class="fas fa-trash-alt mr-1"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-6 text-center text-gray-500">Belum ada project yang tersedia</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                            {{-- FINISH DATE --}}
+                            <td class="px-4 py-3 text-gray-700">
+                                {{ $project->finish_date_project ?? '-' }}
+                            </td>
+
+                            {{-- AKSI --}}
+                            <td class="px-4 py-3">
+                                <div class="flex justify-center items-center gap-2">
+
+                                    {{-- DETAIL --}}
+                                    <a href="{{ route('manager.projects.show', $project->id) }}"
+                                       class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
+                                        <i class="fas fa-eye mr-1"></i> Detail
+                                    </a>
+
+                                    {{-- EDIT --}}
+                                    <a href="{{ route('manager.projects.edit', $project->id) }}"
+                                       class="inline-flex items-center bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
+                                        <i class="fas fa-edit mr-1"></i> Edit
+                                    </a>
+
+                                    {{-- DELETE --}}
+                                    <form action="{{ route('manager.projects.destroy', $project->id) }}"
+                                          method="POST"
+                                          onsubmit="return confirm('Yakin ingin menghapus project ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                        class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
+                                            <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+            </table>
+
+        </div>
+
+        {{-- PAGINATION --}}
+        <div class="mt-6">
+            {{ $projects->links() }}
+        </div>
+
+    @else
+
+        {{-- EMPTY STATE --}}
+        <div class="bg-white shadow-xl rounded-xl p-12 text-center border border-gray-200">
+            <div class="flex justify-center mb-4">
+                <div class="h-20 w-20 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-folder-open text-indigo-600 text-3xl"></i>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-800">Belum Ada Project</h3>
+            <p class="text-gray-500 text-sm mt-2">
+                Tidak ada project yang tersedia saat ini.
+            </p>
+
+            <a href="{{ route('manager.projects.requests') }}"
+               class="mt-5 inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+                <i class="fas fa-plus mr-2"></i>
+                Buat Project dari Request
+            </a>
+        </div>
+
+    @endif
+
 </div>
+
 @endsection

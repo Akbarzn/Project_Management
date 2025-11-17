@@ -4,7 +4,7 @@
         @toggle-sidebar.window="sidebarOpen = $event.detail.open"
         :class="{ 'lg:left-56': sidebarOpen, 'lg:left-14': !sidebarOpen }"
         class="fixed top-0 right-0 mb-4 bg-white border-b border-gray-200
-               h-16 flex items-center justify-between
+               h-16 flex items-center justify-between shadow-xl
                px-6 z-30 transition-all duration-300 ease-in-out w-full lg:w-auto"
     >
        <div class="flex items-center gap-3 w-1/3">

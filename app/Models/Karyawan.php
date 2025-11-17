@@ -17,7 +17,9 @@ class Karyawan extends Model
 
     public function projects()
 {
-    return $this->belongsToMany(Project::class, 'karyawan_project','karyawan_id','project_id');
+    return $this->belongsToMany(Project::class, 'karyawan_projects','karyawan_id','project_id')
+    ->withPivot('cost_snapshot')
+        ->withTimestamps();
 }
 
 public function tasks(){

@@ -109,24 +109,38 @@ class ProjectController extends Controller
 
 
             // assign karyawan ke project (tabel pivot)
-            $project->karyawans()->attach($request->karyawan_ids);
+            // $project->karyawans()->attach($request->karyawan_ids);
 
-            $assignedKaryawans = Karyawan::whereIn('id', $request->karyawan_ids)->get();
+            // $assignedKaryawans = Karyawan::whereIn('id', $request->karyawan_ids)->get();
 
-            foreach ($assignedKaryawans as $karyawan) {
-                // $taskName = $karyawan->job_title . ' Assignment'; 
+            // foreach ($assignedKaryawans as $karyawan) {
+                    // 🔒 Simpan snapshot cost di pivot
+            $syncData = [];
+        foreach ($request->karyawan_ids as $id) {
+            $karyawan = Karyawan::findOrFail($id);
+            $syncData[$id] = [
+                'cost_snapshot' => $karyawan->cost,
+            ];
+        }
 
-                Task::create([
-                    'project_id' => $project->id,
-                    'karyawan_id' => $karyawan->id,
-                    'description_task' => 'Initial Assignment for ' . $karyawan->job_title . '.',
-                    'status' => 'pending',
-                    'progress' => 0,
-                    // 'start_date_task' => $request->start_date_project,
-                ]);
-            }
+        // Attach ke pivot
+        $project->karyawans()->attach($syncData);
 
-            $projectRequest->update(['status' => 'approve']);
+        // --- Buat task awal untuk masing-masing karyawan ---
+        foreach ($request->karyawan_ids as $id) {
+            $karyawan = Karyawan::findOrFail($id);
+
+            Task::create([
+                'project_id'      => $project->id,
+                'karyawan_id'     => $karyawan->id,
+                'description_task'=> 'Initial Assignment for ' . $karyawan->job_title,
+                'status'          => 'pending',
+                'progress'        => 0,
+            ]);
+        }
+
+        // Update status project request
+        $projectRequest->update(['status' => 'approve']);
         });
 
         return redirect()
@@ -189,12 +203,31 @@ class ProjectController extends Controller
 
 
             // Sinkronisasi Karyawan di tabel pivot
-            $project->karyawans()->sync($request->karyawan_ids);
+            // $project->karyawans()->sync($request->karyawan_ids);
+
+            
 
             // Dapatkan Karyawan yang Baru Ditambahkan 
             $oldKaryawanIds = $project->tasks()->pluck('karyawan_id')->toArray();
             $newKaryawanIds = collect($request->karyawan_ids)->diff($oldKaryawanIds);
 
+
+            $syncData = [];
+        foreach ($newKaryawanIds as $id) {
+            if (!in_array($id, $oldKaryawanIds)) {
+                // Karyawan baru → ambil snapshot cost
+                $karyawan = Karyawan::findOrFail($id);
+                $syncData[$id] = ['cost_snapshot' => $karyawan->cost];
+            } else {
+                // Karyawan lama → gunakan data pivot lama agar tidak berubah
+                $pivotData = $project->karyawans()->where('karyawan_id', $id)->first()->pivot;
+                $syncData[$id] = ['cost_snapshot' => $pivotData->cost_snapshot];
+            }
+        }
+
+         // Sinkronisasi pivot tanpa kehilangan data snapshot lama
+        $project->karyawans()->sync($syncData);
+        
             if ($newKaryawanIds->isNotEmpty()) {
                 $newKaryawans = Karyawan::whereIn('id', $newKaryawanIds)->get();
                 foreach ($newKaryawans as $karyawan) {

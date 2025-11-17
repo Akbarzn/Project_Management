@@ -5,74 +5,47 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TaskLog;
 use App\Models\Task;
+use Illuminate\Contracts\View\View;
+use App\Services\TaskLogService;
+use Illuminate\Support\Facades\Auth;
 
 class TaskLogController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-          $logs = TaskLog::with(['task', 'user'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
 
-        return view('admin.task_logs.index', compact('logs'));
-    
+    protected TaskLogService $taskLogService;
+    // Constructor: supaya service bisa dipakai di seluruh fungsi
+    public function __construct(TaskLogService $taskLogService)
+    {
+        $this->taskLogService = $taskLogService;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Tampilkan halaman log untuk 1 task
      */
-    public function create()
+    public function show(Task $task)
     {
-        //
-    }
+        // Validasi bahwa task ini milik karyawan yang login
+        if (Auth::user()->hasRole('karyawan') && $task->karyawan_id !== Auth::user()->karyawan->id) {
+            abort(403, 'Anda tidak memiliki akses ke task ini.');
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Ambil log lewat service (sudah dalam format siap tampil)
+        $logs = $this->taskLogService->listLogs($task->id);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $task = Task::findOrFail($id);
-          $logs = TaskLog::with('user')
-            ->where('task_id', $task->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+        // Tampilkan view log
         return view('karyawans.tasks.logs', compact('task', 'logs'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hapus satu log tertentu (hanya oleh pemilik task)
      */
-    public function edit(string $id)
+    public function destroyLog($id)
     {
-        //
-    }
+        $this->taskLogService->deleteLog($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', 'Riwayat log berhasil dihapus.');
     }
 }

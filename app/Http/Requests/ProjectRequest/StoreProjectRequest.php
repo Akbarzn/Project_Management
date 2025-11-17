@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Client\ProjectRequest;
+namespace App\Http\Requests\ProjectRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
@@ -22,7 +22,7 @@ class StoreProjectRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name_project' => ['required', 'string', 'max:250'],
             'kategori' => ['required', 'string' , 'max:50'],
             'description' => ['required', 'string'],

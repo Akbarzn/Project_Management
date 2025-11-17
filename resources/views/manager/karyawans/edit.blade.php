@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Karyawan')
+@section('title', 'Ubah Data Karyawan')
 
 @section('content')
 
@@ -12,11 +12,12 @@
                     <i class="fas fa-user-tie mr-3"></i>
                     Ubah Data Karyawan
                 </h2>
-                <span class="text-white text-lg font-medium">{{ $karyawan->name }}</span>
+                {{-- Ensure $karyawan is defined and has a name property --}}
+                <span class="text-white text-lg font-medium">{{ $karyawan->name ?? 'Karyawan' }}</span>
             </div>
 
             <div class="p-6">
-                {{--  ERROR VALIDASI --}}
+                {{-- ERROR VALIDASI --}}
                 @if ($errors->any())
                     <div class="mb-5 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm">
                         <p class="font-bold">⚠️ Gagal menyimpan. Silakan periksa:</p>
@@ -34,27 +35,38 @@
 
                     {{-- Nama --}}
                     <div>
-                        <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama</label>
+                        <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
                         <input type="text" name="name" id="name" value="{{ old('name', $karyawan->name) }}"
                             class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror"
+                            placeholder="Masukkan nama lengkap karyawan"
                             required />
+                        @error('name')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- NIK --}}
                         <div>
-                            <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK</label>
+                            <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK (Nomor Induk Karyawan)</label>
                             <input type="text" name="nik" id="nik" value="{{ old('nik', $karyawan->nik) }}"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('nik') border-red-500 @enderror"
+                                placeholder="NIK"
                                 required />
+                            @error('nik')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         {{-- Telepon --}}
                         <div>
-                            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Nomor
-                                Telepon</label>
+                            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon</label>
                             <input type="text" name="phone" id="phone" value="{{ old('phone', $karyawan->phone) }}"
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror" />
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror"
+                                placeholder="Contoh: 0812xxxxxx" />
+                            @error('phone')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -62,11 +74,9 @@
                     <hr class="border-gray-200 pt-4">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {{-- Job Title --}}
-                        <select name="job_title" id="job_title"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror"
-                            required>
-                            <option value="">-- Pilih Jabatan --</option>
+                        {{-- Job Title (Pilihan/Tipe Pekerjaan) --}}
+                        <div>
+                            <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title / Tipe</label>
                             @php
                                 $jobTitles = [
                                     'Analisis Proses Bisnis',
@@ -75,31 +85,47 @@
                                     'Quality Test',
                                     'SysAdmin',
                                 ];
+                                $currentJobTitle = old('job_title', $karyawan->job_title ?? $karyawan->jabatan);
                             @endphp
-                            @foreach ($jobTitles as $title)
-                                <option value="{{ $title }}"
-                                    {{ old('job_title', $karyawan->job_title ?? $karyawan->jabatan) == $title ? 'selected' : '' }}>
-                                    {{ $title }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        {{-- jabatan --}}
-                        <div class="mb-4">
-                            <label for="jabatan" class="block text-sm font-semibold text-gray-700 mb-1">Jabatan</label>
-                            <input type="text" name="jabatan" value="{{ old('jabatan', $karyawan->jabatan) }}"
-                            class="w-full border px-3 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                            <select name="job_title" id="job_title"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror"
+                                required>
+                                <option value="">-- Pilih Job Title --</option>
+                                @foreach ($jobTitles as $title)
+                                    <option value="{{ $title }}"
+                                        {{ $currentJobTitle == $title ? 'selected' : '' }}>
+                                        {{ $title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('job_title')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
+                        {{-- Jabatan (Detail Jabatan) --}}
+                        <div>
+                            <label for="jabatan" class="block text-sm font-semibold text-gray-700 mb-1">Jabatan Detail</label>
+                            <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan', $karyawan->jabatan) }}"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('jabatan') border-red-500 @enderror"
+                                placeholder="Jabatan spesifik di organisasi"
+                                required>
+                            @error('jabatan')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         {{-- Biaya --}}
-                        <div>
-                            <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1">Biaya / Hari
-                                (Rp)</label>
-                            <input type="number" step="0.01" name="cost" id="cost"
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1">Biaya / Hari (Rp)</label>
+                            <input type="number" step="1" name="cost" id="cost"
                                 value="{{ old('cost', $karyawan->cost) }}"
-                                class="w-full border  rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
+                                placeholder="Contoh: 500000"
                                 required />
+                            @error('cost')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 

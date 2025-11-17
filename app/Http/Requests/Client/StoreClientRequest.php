@@ -28,7 +28,7 @@ class StoreClientRequest extends FormRequest
             'password' => 'required|min:6', 
             
             // Validasi untuk Client
-            'nik' => 'required|max:15',
+            'nik' => 'required|max:16',
             'phone' => 'nullable|max:15',
             'kode_organisasi' => 'nullable|max:10',
         ];

@@ -8,7 +8,7 @@
     // daftar job title
     $requiredRoles = [
         'Analisis Proses Bisnis',
-        'Database FUnctional',
+        'Database Functional',
         'Programmer',
         'Quality Test',
         'SysAdmin',

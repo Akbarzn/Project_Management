@@ -23,7 +23,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'progrres' => 'required|integer|min:0|max:100',
-            'description' => 'nullable|string',
+            'catatan' => 'nullable|string',
             'start_date_task' => 'nullable|date',
             'finish_date_task' => 'nullable|date'
         ];

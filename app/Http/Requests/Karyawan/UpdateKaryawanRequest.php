@@ -24,7 +24,7 @@ class UpdateKaryawanRequest extends FormRequest
         $karyawanId = $this->route('karyawan')->id ?? null;
         return [
             'name' => 'sometimes|max:50',
-            'nik' => 'sometimes|unique:karyawans,nik,' .$karyawanId,
+            'nik' => 'sometimes|max:30|unique:karyawans,nik,' .$karyawanId,
             'phone' => 'sometimes',
             'job_title' =>'sometimes',
             'cost' => 'sometimes|numeric',

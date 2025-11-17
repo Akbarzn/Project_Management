@@ -26,10 +26,11 @@ class UpdateTaskRequest extends FormRequest
         return [
             'project_id'      => 'nullable|exists:projects,id',
             'progress'        => 'nullable|integer|min:0|max:100',
-            
-            'desc'     => 'nullable|string|max:500', 
-            
             'start_date_task' => 'nullable|date',
+            'finish_date_task' => 'nullable|date',
+            'hours' => ['nullable', 'numeric', 'min:0', 'max:24'],
+            'catatan'     => 'nullable|string|max:500', 
+            
         ];
     }
 
@@ -43,9 +44,7 @@ class UpdateTaskRequest extends FormRequest
             'progress.integer'      => 'Progress harus berupa angka.',
             'progress.min'          => 'Progress minimal 0%.',
             'progress.max'          => 'Progress maksimal 100%.',
-            
-            'desc.max'       => 'Deskripsi/Catatan maksimal 500 karakter.', 
-            
+            'catatan.max'       => 'Deskripsi/Catatan maksimal 500 karakter.', 
             'start_date_task.date'  => 'Tanggal mulai task tidak valid.',
         ];
     }

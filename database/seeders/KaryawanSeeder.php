@@ -21,41 +21,41 @@ class KaryawanSeeder extends Seeder
                 'name' => 'Budi Analis',
                 'jabatan' => 'Supervisor',
                 'phone' => '081234567801',
-                'nik' => '1111000001',
+                'nik' => '3273010101900001',
                 'job_title' => 'Analisis Proses Bisnis',
-                'cost' => 8000000,
+                'cost' => 200000,
             ],
             [
                 'name' => 'Citra Database',
                 'jabatan' => 'Staff',
                 'phone' => '081234567802',
-                'nik' => '1111000002',
+                'nik' => '3273010101900002',
                 'job_title' => 'Database Functional',
-                'cost' => 5500000,
+                'cost' => 200000,
             ],
             [
                 'name' => 'Dedi Programmer',
                 'jabatan' => 'Specialist',
                 'phone' => '081234567803',
-                'nik' => '1111000003',
+                'nik' => '3273010101900003',
                 'job_title' => 'Programmer',
-                'cost' => 9000000,
+                'cost' => 300000,
             ],
             [
                 'name' => 'Eka Quality Test',
                 'jabatan' => 'Manager',
                 'phone' => '081234567804',
-                'nik' => '1111000004',
+                'nik' => '3273010101900004',
                 'job_title' => 'Quality Test',
-                'cost' => 12000000,
+                'cost' => 200000,
             ],
             [
                 'name' => 'Fajar Sysadmin',
                 'jabatan' => 'Intern',
                 'phone' => '081234567805',
-                'nik' => '1111000005',
+                'nik' => '3273010101900005',
                 'job_title' => 'SysAdmin',
-                'cost' => 3000000,
+                'cost' => 200000,
             ],
         ];
 
@@ -78,4 +78,5 @@ class KaryawanSeeder extends Seeder
 
         echo "Successfully created 5 User and 5 Karyawan records.\n";
     }
+    
 }

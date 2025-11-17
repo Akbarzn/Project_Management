@@ -1,95 +1,150 @@
-@extends('layouts.karyawan') 
-
-@section('title', 'History Log Task')
+@extends('layouts.app')
 
 @section('content')
-<div class="bg-white rounded-lg shadow-lg p-6">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-2xl font-bold text-indigo-700">History Log Task: {{ $task->task_name }}</h2>
-        <a href="{{ route('karyawan.tasks.index') }}" class="btn btn-secondary bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded">
-            &larr; Kembali
+<div class="max-w-6xl mx-auto p-6 space-y-10">
+{{-- ========================== --}}
+{{-- HEADER --}}
+{{-- ========================== --}}
+<div class="flex justify-between items-start mb-6">
+
+    {{-- Judul & Detail --}}
+    <div>
+        <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <i class="fas fa-history text-indigo-600"></i>
+            Riwayat Task
+        </h2>
+
+        <p class="text-gray-600 mt-1 text-sm">
+            Detail perubahan & jam kerja untuk task:
+            <span class="font-semibold text-indigo-600">
+                {{ $task->description_task }}
+            </span>
+        </p>
+    </div>
+
+    {{-- Tombol Kembali --}}
+    <div>
+        <a href="{{ route('karyawan.tasks.index') }}"
+           class="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center gap-2 bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-200">
+            <i class="fas fa-arrow-left text-indigo-600"></i>
+            <span>Kembali</span>
         </a>
     </div>
 
-    {{-- ===== Log Perubahan Task ===== --}}
-    @if ($logs->isEmpty())
-        <div class="alert alert-info bg-blue-100 text-blue-700 p-3 rounded">
-            Belum ada catatan log perubahan untuk task ini.
-        </div>
-    @else
-      <div class="overflow-x-auto mb-8">
-    <table class="min-w-full border border-gray-200 rounded-lg">
-        <thead class="bg-gray-100">
+</div>
+
+
+
+    {{-- ========================================================== --}}
+    {{-- SECTION 1: LOG PERUBAHAN TASK --}}
+    {{-- ========================================================== --}}
+   <div class="overflow-x-auto">
+    <table class="min-w-full text-sm border border-gray-300 rounded-lg">
+        <thead class="bg-indigo-600 text-white uppercase text-xs">
             <tr>
-                <th class="px-4 py-2 text-left">Waktu Perubahan</th>
-                <th class="px-4 py-2 text-left">Field</th>
-                <th class="px-4 py-2 text-left">Nilai Lama</th>
-                <th class="px-4 py-2 text-left">Nilai Baru</th>
-                <th class="px-4 py-2 text-left">Diubah Oleh</th>
-                <th class="px-4 py-2 text-center">Aksi</th>
+                <th class="py-3 px-4 text-left border border-gray-300">Waktu</th>
+                <th class="py-3 px-4 text-left border border-gray-300">User</th>
+                <th class="py-3 px-4 text-left border border-gray-300">Field</th>
+                <th class="py-3 px-4 text-left border border-gray-300">Sebelumnya</th>
+                <th class="py-3 px-4 text-left border border-gray-300">Sesudah</th>
+                <th class="py-3 px-4 text-center border border-gray-300">Aksi</th>
             </tr>
         </thead>
-        <tbody>
-            @php
-                // Kelompokkan log berdasarkan waktu perubahan
-                $groupedLogs = $logs->groupBy(fn($log) => $log->created_at->format('Y-m-d H:i:s'));
-            @endphp
 
-            @foreach ($groupedLogs as $time => $group)
-                @php
-                    $user = $group->first()->user->name ?? 'User Tidak Dikenal';
-                    $fields = $group->map(fn($log) => Str::title(str_replace('_', ' ', $log->field)))->implode('<br>');
-                    $oldValues = $group->map(fn($log) => e($log->old_value ?? 'Kosong'))->implode('<br>');
-                    $newValues = $group->map(fn($log) => '<span class="text-green-600 font-semibold">'.e($log->new_value ?? 'Kosong').'</span>')->implode('<br>');
-                @endphp
+        <tbody class="divide-y divide-gray-200 bg-white">
+            @foreach ($logs as $log)
+                @foreach ($log['fields'] as $i => $field)
+                <tr class="hover:bg-gray-50 transition">
 
-                <tr class="border-t hover:bg-gray-50">
-                    <td class="px-4 py-2 text-sm align-top whitespace-nowrap">{{ \Carbon\Carbon::parse($time)->format('d M Y H:i:s') }}</td>
-                    <td class="px-4 py-2 text-sm align-top">{!! $fields !!}</td>
-                    <td class="px-4 py-2 text-sm align-top text-gray-600">{!! $oldValues !!}</td>
-                    <td class="px-4 py-2 text-sm align-top">{!! $newValues !!}</td>
-                    <td class="px-4 py-2 text-sm align-top whitespace-nowrap">{{ $user }}</td>
-                    <td class="px-4 py-2 text-center align-top">
-                        <form action="{{ route('karyawan.tasks.logs.destroy', $group->first()->id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus riwayat ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Hapus</button>
+                    @if ($i === 0)
+                    <td rowspan="{{ count($log['fields']) }}" 
+                        class="py-3 px-4 border border-gray-300 align-top whitespace-nowrap text-gray-600">
+                        {{ \Carbon\Carbon::parse($log['time'])->format('d M Y, H:i:s') }}
+                    </td>
+
+                    <td rowspan="{{ count($log['fields']) }}"
+                        class="py-3 px-4 border border-gray-300 align-top font-semibold text-gray-800">
+                        {{ $log['user'] }}
+                    </td>
+                    @endif
+
+                    <td class="py-3 px-4 border border-gray-300">
+                        {{ ucfirst($field) }}
+                    </td>
+
+                    <td class="py-3 px-4 border border-gray-300 text-gray-500">
+                        {{ $log['old_values'][$i] ?? '-' }}
+                    </td>
+
+                    <td class="py-3 px-4 border border-gray-300 font-medium text-gray-900">
+                        {{ $log['new_values'][$i] ?? '-' }}
+                    </td>
+
+                    @if ($i === 0)
+                    <td rowspan="{{ count($log['fields']) }}"
+                        class="py-3 px-4 border border-gray-300 text-center align-top">
+                        <form action="{{ route('karyawan.tasks.logs.destroy', $log['id']) }}" method="POST" onsubmit="return confirm('Hapus log ini?')">
+                            @csrf @method('DELETE')
+                            <button class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </form>
                     </td>
+                    @endif
+
                 </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>
 </div>
 
-    @endif
 
-    {{-- ===== Riwayat Jam Kerja ===== --}}
-    <div class="mt-10">
-        <h3 class="text-xl font-bold text-indigo-700 mb-3">⏱️ Riwayat Jam Kerja</h3>
+    {{-- ========================================================== --}}
+    {{-- SECTION 2: RIWAYAT JAM KERJA --}}
+    {{-- ========================================================== --}}
+    <div class="bg-white shadow-xl border border-gray-200 rounded-xl p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-clock text-indigo-600"></i>
+            Riwayat Jam Kerja
+        </h3>
 
         @if ($task->workLogs->isEmpty())
-            <p class="text-gray-500 text-sm">Belum ada jam kerja yang diinput untuk task ini.</p>
+            <div class="bg-gray-50 text-gray-600 p-4 rounded-lg border border-gray-200 text-sm">
+                Belum ada jam kerja yang dicatat untuk task ini.
+            </div>
         @else
-            <table class="min-w-full border border-gray-200 rounded-lg">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-4 py-2 text-left">Tanggal</th>
-                        <th class="px-4 py-2 text-left">Karyawan</th>
-                        <th class="px-4 py-2 text-left">Jam Kerja (Jam)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($task->workLogs as $log)
-                        <tr class="border-t hover:bg-gray-50">
-                            <td class="px-4 py-2 text-sm">{{ \Carbon\Carbon::parse($log->work_date)->format('d M Y') }}</td>
-                            <td class="px-4 py-2 text-sm">{{ $log->karyawan->name ?? 'Tidak Diketahui' }}</td>
-                            <td class="px-4 py-2 text-sm text-indigo-600 font-semibold">{{ $log->hours }} jam</td>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 text-sm rounded-lg">
+                    <thead class="bg-indigo-600 text-white uppercase text-xs">
+                        <tr>
+                            <th class="py-3 px-4 text-left">Tanggal</th>
+                            <th class="py-3 px-4 text-left">Karyawan</th>
+                            <th class="py-3 px-4 text-left">Durasi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach ($task->workLogs as $log)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="py-3 px-4 text-gray-700">
+                                    {{ \Carbon\Carbon::parse($log->work_date)->format('d M Y') }}
+                                </td>
+
+                                <td class="py-3 px-4 text-gray-700">
+                                    {{ $log->karyawan->name ?? '-' }}
+                                </td>
+
+                                <td class="py-3 px-4 text-indigo-600 font-bold">
+                                    {{ $log->hours }} jam
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
+
 </div>
 @endsection

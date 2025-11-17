@@ -3,13 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Manager\UserController;
-use App\Http\Controllers\Manager\ProjectController;
-use App\Http\Controllers\Karyawan\KaryawanController;
-use App\Http\Controllers\Client\ClientController;
-use App\Http\Controllers\Client\ProjectRequestController;
-use App\Http\Controllers\Manager\ProjectRequestController as ManagerProjectRequestController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
+// use App\Http\Controllers\Manager\UserController;
+// use App\Http\Controllers\Manager\ProjectController;
+// use App\Http\Controllers\Karyawan\KaryawanController;
+// use App\Http\Controllers\Client\ClientController;
+use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ProjectRequestController;
+// use App\Http\Controllers\Manager\ProjectRequestController as ManagerProjectRequestController;
+// use App\Http\Controllers\Client\ProjectRequestController;
+// use App\Http\Controllers\Manager\ProjectRequestController as ManagerProjectRequestController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskLogController;
 use App\Http\Controllers\Manager\TaskController as ManagerTaskController;
 
 
@@ -43,6 +50,7 @@ Route::middleware(['auth', 'role:manager'])
         Route::resource('users', UserController::class);
         Route::resource('karyawans', KaryawanController::class);
         Route::resource('clients', ClientController::class);
+        Route::resource('projects', ProjectController::class);
 
         // Project Management
         Route::get('projects/requests', [ProjectController::class, 'showRequest'])
@@ -52,9 +60,12 @@ Route::middleware(['auth', 'role:manager'])
         Route::resource('projects', ProjectController::class);
         
         // Rute untuk Project Request Manager
-        Route::resource('tasks', ManagerTaskController::class);
-        Route::resource('project-request', ManagerProjectRequestController::class);
+        Route::resource('tasks', TaskController::class);
+        Route::resource('project-request', ProjectRequestController::class);
         Route::get('/karyawan/{id}/project', [DashboardController::class, 'showKaryawanProject'])->name('karyawans.project');
+        
+        // /untuk projectdetail
+        Route::get('project-detail/{id}', [DashboardController::class,'getProjectDetail'])->name('project-detail');
     });
 
 Route::middleware(['auth', 'role:karyawan'])
@@ -63,10 +74,13 @@ Route::middleware(['auth', 'role:karyawan'])
 ->group(function () {
         // Task Management
         Route::resource('tasks', TaskController::class);
+        Route::get('tasks/{task}/log', [TaskLogController::class, 'show'])->name('tasks.logs');
+        Route::delete('tasks/logs/{log}', [TaskLogController::class, 'destroy'])->name('tasks.logs.destroy');
+
 
         // Log kerja (task work log)
-        Route::get('tasks/{task}/logs', [TaskController::class, 'logs'])->name('tasks.logs');
-        Route::delete('tasks/logs/{log}', [TaskController::class, 'destroyLog'])->name('tasks.logs.destroy');
+        // Route::get('tasks/{task}/logs', [TaskController::class, 'logs'])->name('tasks.logs');
+        // Route::resource('task-logs', TaskLogController::class);
     });
 
 Route::middleware(['auth', 'role:client'])

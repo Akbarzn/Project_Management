@@ -1,151 +1,171 @@
 @extends('layouts.app')
 
+@section('title', 'Detail Project')
+
 @section('content')
-<div class="max-w-6xl mx-auto p-6 space-y-8">
+<div class="max-w-6xl mx-auto p-6 space-y-10">
 
-    {{-- Header Proyek --}}
-    <div class="bg-white shadow-lg rounded-2xl p-6 border border-gray-200">
-        <div class="flex item-center justify-between">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">
-                {{ $project->projectRequest->name_project ?? 'Tanpa Nama' }}
-            </h2>
-            <a href="{{ route('manager.projects.index') }}" class="bg-indigo-500 text-center px-4 py-2 mb-2 rounded-sm text-white bg-shadow-white">Kembali</a>
+    {{-- ========== HEADER PROJECT ========== --}}
+    <div class="bg-white shadow-xl rounded-2xl p-8 border border-gray-200">
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-folder-open text-indigo-600"></i>
+                    {{ $project->projectRequest->name_project ?? 'Tanpa Nama' }}
+                </h2>
+                <p class="text-gray-500 mt-1">Detail lengkap informasi proyek</p>
+            </div>
+
+            <a href="{{ route('manager.projects.index') }}"
+                class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-indigo-700 transition">
+                <i class="fas fa-arrow-left mr-1"></i> Kembali
+            </a>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-700">
-            <p><span class="font-semibold">Klien:</span> {{ $project->client->name ?? '-' }}</p>
-            <p><span class="font-semibold">Tanggal Mulai:</span> {{ $project->start_date_project }}</p>
-            <p><span class="font-semibold">Tanggal Selesai:</span> {{ $project->finish_date_project ?? '-' }}</p>
-            <p><span class="font-semibold">Status:</span> {{ ucfirst($project->status) }}</p>
-            <p><span class="font-semibold">Catatan:</span> {{ $project->projectRequest->description ?? '-' }}</p>
+        {{-- Informasi Proyek --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+
+            {{-- Klien --}}
+            <div class="bg-gray-50 p-5 rounded-xl border flex flex-col">
+                <span class="text-sm font-semibold text-gray-600">Klien</span>
+                <span class="mt-1 text-gray-800 font-bold text-lg">
+                    {{ $project->client->name ?? '-' }}
+                </span>
+            </div>
+
+            {{-- Start Date --}}
+            <div class="bg-gray-50 p-5 rounded-xl border flex flex-col">
+                <span class="text-sm font-semibold text-gray-600">Tanggal Mulai</span>
+                <span class="mt-1 text-gray-800 font-bold text-lg">
+                    {{ $project->start_date_project ?? '-' }}
+                </span>
+            </div>
+
+            {{-- Finish Date --}}
+            <div class="bg-gray-50 p-5 rounded-xl border flex flex-col">
+                <span class="text-sm font-semibold text-gray-600">Tanggal Selesai</span>
+                <span class="mt-1 text-gray-800 font-bold text-lg">
+                    {{ $project->finish_date_project ?? '-' }}
+                </span>
+            </div>
+
+            {{-- Status --}}
+            <div class="bg-gray-50 p-5 rounded-xl border flex flex-col">
+                <span class="text-sm font-semibold text-gray-600">Status</span>
+                <span class="mt-1 text-white font-semibold px-3 py-1 rounded-full text-center 
+                    @if($project->status === 'complete') bg-green-600 
+                    @elseif($project->status === 'ongoing') bg-yellow-500 
+                    @else bg-red-500 @endif">
+                    {{ ucfirst($project->status) }}
+                </span>
+            </div>
+
+            {{-- Catatan --}}
+            <div class="md:col-span-2 bg-gray-50 p-5 rounded-xl border">
+                <span class="text-sm font-semibold text-gray-600">Catatan</span>
+                <p class="text-gray-800 mt-2">{{ $project->projectRequest->description ?? '-' }}</p>
+            </div>
+
         </div>
 
-        <div class="mt-6">
-            <p class="text-lg font-semibold text-green-600">
-                Data Total Cost di Database :
-                Rp {{ number_format($project->total_cost, 0, ',', '.') }}
+        {{-- TOTAL COST --}}
+        <div class="mt-8">
+            <p class="text-xl font-bold text-green-600">
+                Total Cost: Rp {{ number_format($project->total_cost, 0, ',', '.') }}
             </p>
-            <span class="text-sm text-red-400">Data diperbarui otomatis setiap kali karyawan update progress task.</span>
-            @php
-                $totalProgress = $project->tasks->count() > 0 
-                    ? round($project->tasks->avg('progress'), 2)
-                    : 0;
-            @endphp
-             <div class="mt-4">
-                <p class="font-semibold text-gray-700 mb-1">
-                    Progress Proyek: <span class="text-indigo-600">{{ $totalProgress }}%</span>
-                </p>
-                <div class="w-full bg-gray-200 rounded-full h-4">
-                    <div class="h-4 rounded-full transition-all duration-500 
-                        @if($totalProgress == 100)  
-                        @elseif($totalProgress >= 50) 
-                        @else bg-yellow-400 @endif"
-                        style="width: {{ $totalProgress }}%">
-                    </div>
+            <p class="text-gray-500 text-sm">Dihitung otomatis berdasarkan aktivitas karyawan</p>
+        </div>
+
+        {{-- PROGRESS BAR --}}
+        <div class="mt-6">
+            <div class="flex justify-between items-center mb-1">
+                <h3 class="font-semibold text-gray-700">Progress Proyek</h3>
+                <span class="font-bold text-indigo-600">{{ $totalProgress }}%</span>
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div class="h-4 bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-full transition-all"
+                    style="width: {{ $totalProgress }}%">
                 </div>
             </div>
         </div>
+
     </div>
 
-    {{-- Breakdown Table --}}
-    <div class="bg-white shadow-lg rounded-2xl border border-gray-200 overflow-hidden">
-        <div class="bg-indigo-500 px-6 py-3 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-white">Breakdown Biaya per Karyawan & Task</h3>
+    {{-- ========== BREAKDOWN COST TABLE ========== --}}
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
+
+        <div class="bg-indigo-600 px-6 py-4">
+            <h3 class="text-lg text-white font-bold flex items-center gap-2">
+                <i class="fas fa-coins"></i>
+                Breakdown Biaya per Karyawan & Task
+            </h3>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full border-collapse text-sm">
-                <thead class="bg-indigo-400 border-b">
+            <table class="min-w-full text-sm">
+
+                <thead class="bg-indigo-500 text-white uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="px-4 py-2 text-left font-medium text-white">No</th>
-                        <th class="px-4 py-2 text-left font-medium text-white">Nama Karyawan</th>
-                        <th class="px-4 py-2 text-left font-medium text-white">Job Title</th>
-                        <th class="px-4 py-2 text-left font-medium text-white">Catatan</th>
-                        <th class="px-4 py-2 text-left font-medium text-white">Progress</th>
-                        <th class="px-4 py-2 text-left font-medium text-white">Statu</th>
-                        <th class="px-4 py-2 text-center font-medium text-white">Durasi (hari kerja)</th>
-                        <th class="px-4 py-2 text-center font-medium text-white">Jam Kerja</th>
-                        <th class="px-4 py-2 text-right font-medium text-white">Cost per Jam</th>
-                        <th class="px-4 py-2 text-right font-medium text-white">Total Biaya</th>
+                        <th class="px-4 py-3 text-left">No</th>
+                        <th class="px-4 py-3 text-left">Karyawan</th>
+                        <th class="px-4 py-3 text-left">Job Title</th>
+                        <th class="px-4 py-3 text-left">Catatan</th>
+                        <th class="px-4 py-3 text-center">Progress</th>
+                        <th class="px-4 py-3 text-center">Status</th>
+                        <th class="px-4 py-3 text-center">Durasi</th>
+                        <th class="px-4 py-3 text-center">Jam Kerja</th>
+                        <th class="px-4 py-3 text-right">Cost / Jam</th>
+                        <th class="px-4 py-3 text-right">Total Biaya</th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y">
-                    @foreach ($project->tasks as $task)
-                        @php
-                            // total jam kerja untuk task ini
-                            $totalHours = $task->workLogs->sum('hours');
-                            $costPerHour = $task->karyawan->cost ?? 0;
-                            $totalCost = $totalHours * $costPerHour;
 
-                            // hitung hanya hari kerja (Senin–Jumat)
-                            $durationDays = $task->workLogs
-                                ->pluck('work_date')
-                                ->unique()
-                                ->filter(function ($date) {
-                                    $dayOfWeek = \Carbon\Carbon::parse($date)->dayOfWeek;
-                                    return $dayOfWeek !== 6 && $dayOfWeek !== 0; // skip Sabtu & Minggu
-                                })
-                                ->count();
-                        @endphp
+                    @foreach ($tasks as $index => $task)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-3">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 font-semibold">{{ $task['karyawan'] }}</td>
+                            <td class="px-4 py-3">{{ $task['job_title'] }}</td>
+                            <td class="px-4 py-3">{{ $task['catatan'] }}</td>
 
-                        <tr>
-                            <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                            <td class="px-4 py-2">{{ $task->karyawan->name }}</td>
-                            <td class="px-4 py-2">{{ $task->karyawan->job_title }}</td>
-                            <td class="px-4 py-2">{{ $task->description_task }}</td>
-                            <td class="text-center px-4 py-2 w-32">
-                                <div class="w-full bg-gray-200 rounded-full h-3">
-                                    <div class="h-3 rounded-full
-                                        @if($task->progress == 100) 
-                                        @elseif($task->progress >= 50)
-                                        @else bg-yellow-400 @endif"
-                                        style="width: {{ $task->progress }}%">
-                                    </div>
-                                </div>
-                                <span class="text-xs text-gray-600">{{ $task->progress }}</span>
+                            <td class="px-4 py-3 text-center">
+                                <span class="px-3 py-1 rounded-full text-white text-xs font-semibold
+                                    @if($task['progress'] == 100) bg-green-600 
+                                    @elseif($task['progress'] > 0) bg-yellow-500 
+                                    @else bg-gray-400 @endif">
+                                    {{ $task['progress'] }}%
+                                </span>
                             </td>
 
-                           {{-- Status --}}
-                            <td class="text-center px-4 py-2">
-                                <span class="
-                                    px-2 py-1 rounded text-white text-xs font-small
-                                    @if($task->status === 'complete') 
-                                    @elseif($task->status === 'inwork') 
-                                    @elseif($task->status === 'pending') 
-                                    @else bg-yellow-400 @endif
-                                ">
-                                    {{ ucfirst($task->status) }}
-                            </span>
-                            <td class="text-center px-4 py-2">{{ $durationDays }}</td>
-                            <td class="text-center px-4 py-2">{{ $totalHours ?: '-' }}</td>
-                            <td class="text-right px-4 py-2">
-                                Rp {{ number_format($costPerHour, 0, ',', '.') }}
+                            <td class="px-4 py-3 text-center capitalize">{{ $task['status'] }}</td>
+                            <td class="px-4 py-3 text-center">{{ $task['days'] }}</td>
+                            <td class="px-4 py-3 text-center">{{ $task['hours'] }}</td>
+
+                            <td class="px-4 py-3 text-right">
+                                Rp {{ number_format($task['costPerHour'], 0, ',', '.') }}
                             </td>
-                            <td class="text-right px-4 py-2 font-semibold">
-                                Rp {{ number_format($totalCost, 0, ',', '.') }}
+
+                            <td class="px-4 py-3 text-right font-bold text-indigo-600">
+                                Rp {{ number_format($task['totalCost'], 0, ',', '.') }}
                             </td>
                         </tr>
                     @endforeach
 
-                    {{-- Baris Total --}}
-                    @php
-                        $grandTotal = $project->tasks->sum(function ($task) {
-                            return $task->workLogs->sum('hours') * ($task->karyawan->cost ?? 0);
-                        });
-                    @endphp
-                    <tr class="bg-green-50 font-semibold">
-                        <td colspan="7" class="text-right px-4 py-3">Total Semua Cost</td>
-                        <td class="text-right px-4 py-3">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+                    {{-- GRAND TOTAL --}}
+                    <tr class="bg-green-100 font-bold text-green-700">
+                        <td colspan="9" class="px-4 py-3 text-right">Grand Total</td>
+                        <td class="px-4 py-3 text-right">
+                            Rp {{ number_format($grandTotal, 0, ',', '.') }}
+                        </td>
                     </tr>
+
                 </tbody>
             </table>
         </div>
+
     </div>
 
 </div>
 @endsection
-
-<script>
-    setInterval(() => window.location.reload(), 60000);
-</script>

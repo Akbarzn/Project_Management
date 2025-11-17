@@ -10,6 +10,8 @@ class Project extends Model
 {
     use HasFactory;
 
+
+
     protected $fillable = [
         'client_id',
         'request_id',
@@ -49,13 +51,20 @@ class Project extends Model
     // Relasi ke karyawan yang ditugaskan
     public function karyawans()
 {
-    return $this->belongsToMany(Karyawan::class, 'karyawan_project','project_id','karyawan_id');
+    return $this->belongsToMany(Karyawan::class, 'karyawan_projects','project_id','karyawan_id')
+    ->withPivot('cost_snapshot')
+    ->withTimestamps();
 }
 
 public function tasks(){
     return $this->hasMany(Task::class, 'project_id');
 }
 
+public function getKaryawanCost($karyawanId)
+{
+    $karyawan = $this->karyawans()->where('karyawan_id', $karyawanId)->first();
+    return $karyawan ? $karyawan->pivot->cost_snapshot : 0;
+}
 public function calculateTotalCost():float{
      return (float) $this->tasks()
         ->with(['karyawan', 'workLogs'])

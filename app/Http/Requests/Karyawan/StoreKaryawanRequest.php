@@ -33,7 +33,7 @@ class StoreKaryawanRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'name' => 'required|max:50',
-            'nik' => 'nullable|unique:karyawans,nik', 
+            'nik' => 'nullable|unique:karyawans,nik|max:30', 
             'jabatan' => 'string|max:50',
             'phone' => 'required|nullable',
             'job_title' =>'required',

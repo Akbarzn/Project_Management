@@ -27,3 +27,31 @@
         </div>
     </div>
 </x-app-layout>
+
+                            @php
+                                // total jam kerja untuk task ini
+                                // $totalHours = $task->workLogs->sum('hours');
+                                // $costPerHour = $task->karyawan->cost ?? 0;
+                                // $totalCost = $totalHours * $costPerHour;
+
+                                // // hitung hanya hari kerja (Senin–Jumat)
+                                // $durationDays = $task->workLogs
+                                //     ->pluck('work_date')
+                                //     ->unique()
+                                //     ->filter(function ($date) {
+                                //         $dayOfWeek = \Carbon\Carbon::parse($date)->dayOfWeek;
+                                //         return $dayOfWeek !== 6 && $dayOfWeek !== 0; // skip Sabtu & Minggu
+                                //     })
+                                //     ->count();
+
+                                $pivotCost = $project->getKaryawanCost($task->karyawan_id);
+                                $totalHours = $task->workLogs->sum('hours');
+                                $totalCost = $totalHours * $pivotCost;
+
+                                // hitung hari kerja (Senin–Jumat)
+                                $durationDays = $task->workLogs
+                                    ->pluck('work_date')
+                                    ->unique()
+                                    ->filter(fn($date) => !in_array(\Carbon\Carbon::parse($date)->dayOfWeek, [0, 6]))
+                                    ->count();
+                            @endphp
