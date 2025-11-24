@@ -69,8 +69,11 @@ class ProjectService
         $project->load(['client', 'projectRequest', 'karyawans']);
        
         // Semua karyawan untuk dropdown
-    $allKaryawans = Karyawan::all(['id', 'name', 'job_title']);
-
+        $all = Karyawan::all();
+        $groupKaryawan = [];
+        foreach($all as $karyawan){
+            $groupKaryawan[$karyawan->job_title][] = $karyawan;
+        }
     // Mapping role → karyawan_id berdasarkan snapshot
     $assigned = [];
 
@@ -83,7 +86,7 @@ class ProjectService
             'project' => $project,
             // 'karyawans' => Karyawan::all(['id', 'name', 'job_title', 'cost','job_title_snapshot']),
             'assigned' =>$assigned,
-            'allKaryawans' => $allKaryawans,
+            'groupKaryawan' => $groupKaryawan,
             'clients' => Client::all(['id', 'name']),
             'selectedKaryawanIds' => $project->karyawans->pluck('id')->toArray(),
             'requiredJobTitle' => $this->getRequiredJobTitle(),

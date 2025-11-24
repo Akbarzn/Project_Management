@@ -39,29 +39,4 @@ class TaskLogService
                 ];
             });
     }
-
-    /**
-     * Summary of deleteLog
-     * hapus log berdasarka id 
-     * hanya karyawan yang punya taska miliknya yang bisa dihapus
-     * @param int $id
-     * @return bool
-     */
-    public function deleteLog(int $id): bool
-    {
-        // Cari log berdasarkan ID, kalau tidak ketemu bakal error 404 otomatis
-        $log = TaskLog::findOrFail($id);
-
-        // Ambil task yang berhubungan dengan log ini
-        $task = $log->task;
-
-        // cek karyawan yang login adalah pemilik task ini
-        // Kalau bukan, langsung abort dengan error 403 (tidak diizinkan)
-        if (Auth::user()->karyawan->id !== $task->karyawan_id) {
-            abort(403, 'Anda tidak memiliki izin menghapus log ini.');
-        }
-
-        // Kalau lolos validasi, hapus log lewat repository
-        return $this->repository->delete($id);
-    }
 }

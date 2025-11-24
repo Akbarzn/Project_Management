@@ -13,7 +13,7 @@
         </h2>
 
         <a href="{{ route('clients.project-requests.index') }}"
-           class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
+           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
         </a>
     </div>

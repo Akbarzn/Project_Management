@@ -15,8 +15,5 @@ class TaskLogRepository implements TaskLogRepositoryInterface
             ->get();
     }
 
-    public function delete(int $id): bool
-    {
-        return TaskLog::findOrFail($id)->delete();
-    }
+    
 }

@@ -40,7 +40,6 @@
                 <th class="py-3 px-4 text-left border border-gray-300">Field</th>
                 <th class="py-3 px-4 text-left border border-gray-300">Sebelumnya</th>
                 <th class="py-3 px-4 text-left border border-gray-300">Sesudah</th>
-                <th class="py-3 px-4 text-center border border-gray-300">Aksi</th>
             </tr>
         </thead>
 
@@ -72,19 +71,6 @@
                     <td class="py-3 px-4 border border-gray-300 font-medium text-gray-900">
                         {{ $log['new_values'][$i] ?? '-' }}
                     </td>
-
-                    @if ($i === 0)
-                    <td rowspan="{{ count($log['fields']) }}"
-                        class="py-3 px-4 border border-gray-300 text-center align-top">
-                        <form action="{{ route('karyawan.tasks.logs.destroy', $log['id']) }}" method="POST" onsubmit="return confirm('Hapus log ini?')">
-                            @csrf @method('DELETE')
-                            <button class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
-                    </td>
-                    @endif
-
                 </tr>
                 @endforeach
             @endforeach

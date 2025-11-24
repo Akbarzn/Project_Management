@@ -47,10 +47,10 @@ class TaskLogController extends Controller
      * Hapus satu log tertentu 
      * cuman bisa dilakukan sama pemilik task
      */
-    public function destroyLog($id)
-    {
-        $this->taskLogService->deleteLog($id);
+    // public function destroyLog($id)
+    // {
+    //     $this->taskLogService->deleteLog($id);
 
-        return back()->with('success', 'Riwayat log berhasil dihapus.');
-    }
+    //     return back()->with('success', 'Riwayat log berhasil dihapus.');
+    // }
 }
