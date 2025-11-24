@@ -22,8 +22,8 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'progrres' => 'required|integer|min:0|max:100',
-            'description' => 'nullable|string',
+            'progress' => 'required|integer|min:0|max:100',
+            'catatan' => 'nullable|string',
             'start_date_task' => 'nullable|date',
             'finish_date_task' => 'nullable|date'
         ];

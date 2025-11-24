@@ -28,44 +28,51 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request)
     {
-        // dd('masuk ke update ');
         $user = Auth::user();
         $validated = $request->validated();
-
+        
         // Update data user
         $user->name = $validated['name'];
         $user->email = $validated['email'];
 
-         if (!empty($validated['password'])) {
+        // update password jika user isi password baru
+        if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
-
-        // update poto
-        if ($request->hasFile('profile_photo')) {
+        
+        // update poto profile
+        if ($request->hasFile('potho_profile')) {
             if ($user->potho_profile && $user->potho_profile !== 'images/default.jpg') {
                 Storage::disk('public')->delete($user->potho_profile);
             }
 
-            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            // upload poto baru ke storage/public/profile_pothos
+            $path = $request->file('potho_profile')->store('profile_photos', 'public');
             $user->potho_profile = $path;
         }
-
-        $user->save();
-
+        
+        
         // update data karyawan
         if ($user->hasRole('karyawan') && $user->karyawan) {
             $user->karyawan->update([
                 'nik' => $validated['nik'] ?? $user->karyawan->nik,
                 'phone' => $validated['phone'] ?? $user->karyawan->phone,
+                'jabatan' => $validated['jabatan'] ?? $user->karyawan->jabatan,
+                'job_title' => $validated['job_title'] ?? $user->karyawan->job_title,
+                'cost' => $validated['cost'] ?? $user->karyawan->cost,
             ]);
         }
-
+        
         // update data client
         if ($user->hasRole('client') && $user->client) {
             $user->client->update([
-                'jabatan' => $validated['jabatan'] ?? $user->client->jabatan,
+                'nik' => $validated['nik'] ?? $user->client->nik,
+                'phone' => $validated['phone'] ?? $user->client->phone,
+                'kode_organisasi' => $validated['kode_organisasi'] ?? $user->client->kode_organisasi,
             ]);
         }
+        $user->save();
+        // dd('masuk ke update ');/
 
         // dd($validated);
         // dd($user->roles->pluck('name'));

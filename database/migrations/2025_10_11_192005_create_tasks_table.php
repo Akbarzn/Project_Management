@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->foreignId('karyawan_id')->constrained()->onDelete('cascade');
             $table->integer('progress')->default(0); 
-            $table->text('description_task')->nullable(); 
+            $table->text('catatan')->nullable(); 
             $table->date('start_date_task')->nullable();
             $table->date('finish_date_task')->nullable();
             $table->enum('status',['pending','inwork','complete']);

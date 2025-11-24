@@ -6,9 +6,9 @@
 
 @php
     // daftar job title
-    $requiredRoles = [
+    $requiredJobTitle = [
         'Analisis Proses Bisnis',
-        'Database FUnctional',
+        'Database Functional',
         'Programmer',
         'Quality Test',
         'SysAdmin',
@@ -107,9 +107,9 @@
                             class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror" 
                             required>
                             <option value="" disabled {{ old('job_title') == null ? 'selected' : '' }}>Pilih Job Title</option>
-                            @foreach($requiredRoles as $role)
-                                <option value="{{ $role }}" {{ old('job_title') == $role ? 'selected' : '' }}>
-                                    {{ $role }}
+                            @foreach($requiredJobTitle as $jobTitle)
+                                <option value="{{ $jobTitle }}" {{ old('job_title') == $jobTitle ? 'selected' : '' }}>
+                                    {{ $jobTitle }}
                                 </option>
                             @endforeach
                         </select>

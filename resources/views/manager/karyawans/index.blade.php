@@ -1,76 +1,88 @@
 @extends('layouts.app')
 
+@section('title', 'Daftar Karyawan')
+
 @section('content')
 
-<div class="container mx-auto px-6 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">
-            <svg class="h-8 w-8 text-gray-800 inline-block mr-2 align-middle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            Daftar Karyawan
-        </h2>
+<div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+
+    {{-- HEADER --}}
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-3xl font-extrabold text-gray-800 flex items-center gap-3">
+                <i class="fas fa-users text-indigo-600"></i>
+                Daftar Karyawan
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">
+                Kelola seluruh data karyawan.
+            </p>
+        </div>
+
         <a href="{{ route('manager.karyawans.create') }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
-            Tambah Karyawan Baru
+           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg shadow-indigo-300/40 transition">
+            + Tambah Karyawan
         </a>
     </div>
 
-    {{-- Pesan Success --}}
+    {{-- SUCCESS MESSAGE --}}
     @if(session('success'))
-        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 p-4 rounded-lg shadow-sm">
-            <p>{{ session('success') }}</p>
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm">
+            <p class="text-green-700 font-medium">{{ session('success') }}</p>
         </div>
     @endif
 
+
+    {{-- TABLE --}}
     @if($karyawans->count() > 0)
-        <div class="overflow-x-auto bg-white shadow-lg rounded-lg ">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-indigo-600 text-white">
+        <div class="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden">
+
+            <table class="min-w-full text-sm">
+                <thead class="bg-indigo-600 text-white uppercase text-xs tracking-wider">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">No</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Nama</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">NIK</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Telepon</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Jabatan</th>
-                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">Biaya/Jam</th>
-                        <th scope="col" class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider">Aksi</th>
+                        <th class="px-4 py-3 text-center">No</th>
+                        <th class="px-4 py-3 text-left">Nama</th>
+                        <th class="px-4 py-3 text-left">NIK</th>
+                        <th class="px-4 py-3 text-left">Telepon</th>
+                        <th class="px-4 py-3 text-left">Jabatan</th>
+                        <th class="px-4 py-3 text-left">Biaya/Jam</th>
+                        <th class="px-4 py-3 text-center">Aksi</th>
                     </tr>
                 </thead>
-                
-                <tbody class="bg-white divide-y divide-gray-100">
+
+                <tbody class="divide-y divide-gray-200">
                     @foreach($karyawans as $index => $karyawan)
-                        <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                @if (method_exists($karyawans, 'firstItem'))
-                                    {{ $karyawans->firstItem() + $index }}
-                                @else
-                                    {{ $loop->iteration }}
-                                @endif
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-3 text-center">
+                                {{ $karyawans->firstItem() + $index }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $karyawan->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $karyawan->nik }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $karyawan->phone }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $karyawan->job_title }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                            <td class="px-4 py-3 font-semibold text-gray-800">{{ $karyawan->name }}</td>
+                            <td class="px-4 py-3 text-gray-700">{{ $karyawan->nik }}</td>
+                            <td class="px-4 py-3 text-gray-700">{{ $karyawan->phone }}</td>
+                            <td class="px-4 py-3 text-gray-700">{{ $karyawan->job_title }}</td>
+                            <td class="px-4 py-3 text-gray-700">
                                 Rp {{ number_format($karyawan->cost, 0, ',', '.') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-3">
-                                
+                            <td class="px-4 py-3 text-center space-x-2">
+
+                                {{-- EDIT --}}
                                 <a href="{{ route('manager.karyawans.edit', $karyawan->id) }}"
-                                   class="inline-block bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-md text-xs font-semibold transition duration-150 shadow-sm">
-                                    Edit
+                                   class="inline-flex items-center bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
+                                    <i class="fas fa-edit mr-1"></i> Edit
                                 </a>
-                                
-                                <form action="{{ route('manager.karyawans.destroy', $karyawan->id) }}" method="POST" class="inline">
+
+                                {{-- DELETE --}}
+                                <form action="{{ route('manager.karyawans.destroy', $karyawan->id) }}"
+                                      method="POST"
+                                      class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
-                                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-semibold transition duration-150 shadow-sm"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus karyawan ini? Tindakan ini permanen.')">
-                                        Hapus
+                                    <button type="submit"
+                                            onclick="return confirm('Yakin ingin menghapus karyawan ini?')"
+                                            class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
+                                        <i class="fas fa-trash mr-1"></i> Hapus
                                     </button>
                                 </form>
+
                             </td>
                         </tr>
                     @endforeach
@@ -80,26 +92,33 @@
 
         {{-- Pagination --}}
         <div class="mt-6">
-            @if (method_exists($karyawans, 'links'))
-                {{ $karyawans->links() }}
-            @endif
+            {{ $karyawans->links() }}
         </div>
+
     @else
-        <div class="text-center py-12 bg-white shadow-lg rounded-lg">
-            <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak Ada Data Karyawan</h3>
-            <p class="mt-1 text-sm text-gray-500">
-                Silakan tambahkan data karyawan baru untuk memulai.
-            </p>
-            <div class="mt-6">
-                <a href="{{ route('manager.karyawans.create') }}"
-                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Tambah Karyawan
-                </a>
+
+        {{-- EMPTY STATE  --}}
+        <div class="bg-white shadow-xl rounded-xl p-12 text-center border border-gray-200">
+            <div class="flex justify-center mb-4">
+                <div class="h-20 w-20 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-plus text-indigo-600 text-3xl"></i>
+                </div>
             </div>
+
+            <h3 class="text-lg font-semibold text-gray-800">Belum Ada Data Karyawan</h3>
+            <p class="text-gray-500 text-sm mt-2">
+                Tambahkan karyawan baru untuk mulai mengelola data.
+            </p>
+
+            <a href="{{ route('manager.karyawans.create') }}"
+                class="mt-5 inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+                <i class="fas fa-plus mr-2"></i>
+                Tambah Karyawan
+            </a>
         </div>
+
     @endif
+
 </div>
+
 @endsection

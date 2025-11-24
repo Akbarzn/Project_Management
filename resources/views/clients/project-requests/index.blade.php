@@ -3,74 +3,140 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
 
+    {{-- Header --}}
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">Daftar Project Request</h2>
         <a href="{{ route('clients.project-requests.create') }}"
-           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow-sm transition">
+           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">
             + Tambah Request
         </a>
     </div>
 
-    <div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-indigo-500">
+    {{-- Table --}}
+    <div class="overflow-x-auto bg-white shadow-xl rounded-xl border border-gray-200">
+        <table class="min-w-full table-fixed divide-y divide-gray-200">
+            <thead class="bg-indigo-600">
                 <tr>
-                    <th class="px-4 py-2 text-left text-white font-medium">Tiket</th>
-                    <th class="px-4 py-2 text-left text-white font-medium">Project Name</th>
-                    <th class="px-4 py-2 text-left text-white font-medium">Kategori</th>
-                    <th class="px-4 py-2 text-left text-white font-medium">Status</th>
-                    <th class="px-4 py-2 text-left text-white font-medium">Document</th>
-                    <th class="px-4 py-2 text-center text-white font-medium">Aksi</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-28">Tiket</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-48">Project Name</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Kategori</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Status</th>
+
+                    {{-- Description kolom panjang pakai truncate --}}
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white">Description</th>
+
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Document</th>
+                    <th class="px-4 py-3 text-center text-xs font-semibold uppercase text-white w-40">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse($requests as $requestProject)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2">{{ $requestProject->tiket }}</td>
-                    <td class="px-4 py-2">{{ $requestProject->name_project }}</td>
-                    <td class="px-4 py-2">{{ ucfirst($requestProject->kategori) }}</td>
-                    <td class="px-4 py-2">
-                        @if($requestProject->status === 'pending')
-                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">{{ ucfirst($requestProject->status) }}</span>
-                        @elseif($requestProject->status === 'approved')
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">{{ ucfirst($requestProject->status) }}</span>
-                        @elseif($requestProject->status === 'rejected')
-                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">{{ ucfirst($requestProject->status) }}</span>
-                        @else
-                            <span>{{ ucfirst($requestProject->status) }}</span>
-                        @endif
+
+            <tbody class="bg-white divide-y divide-gray-200">
+
+                @forelse ($data as $requestProject)
+                <tr class="hover:bg-gray-50 transition duration-150">
+
+                    {{-- Tiket --}}
+                    <td class="px-4 py-2 text-sm text-gray-700">
+                        {{ $requestProject->tiket }}
                     </td>
-                    <td class="px-4 py-2">
+
+                    {{-- Nama Project --}}
+                    <td class="px-4 py-2 text-sm font-medium text-gray-800 truncate">
+                        {{ $requestProject->name_project }}
+                    </td>
+
+                    {{-- Kategori --}}
+                    <td class="px-4 py-2 text-sm text-gray-700">
+                        {{ ucfirst($requestProject->kategori) }}
+                    </td>
+
+                    {{-- Status --}}
+                    <td class="px-4 py-2 text-sm">
+                        @php
+                            $statusClass = [
+                                'pending' => 'bg-yellow-100 text-yellow-800',
+                                'approve' => 'bg-green-100 text-green-800',
+                                'approved' => 'bg-green-100 text-green-800',
+                                'rejected' => 'bg-red-100 text-red-800',
+                            ][$requestProject->status] ?? 'bg-gray-100 text-gray-800';
+                        @endphp
+
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClass }}">
+                            {{ ucfirst($requestProject->status) }}
+                        </span>
+                    </td>
+
+                    {{-- Description Truncate + Tooltip --}}
+                    <td class="px-4 py-2 max-w-xs truncate text-sm text-gray-700 relative group">
+
+                        {{ $requestProject->description }}
+
+                        {{-- Tooltip --}}
+                        <div class="absolute hidden group-hover:block bg-gray-900 text-white text-xs rounded px-3 py-2 w-72
+                                    left-0 top-8 shadow-lg z-50">
+                            {{ $requestProject->description }}
+                        </div>
+                    </td>
+
+                    {{-- Document --}}
+                    <td class="px-4 py-2 text-sm">
                         @if ($requestProject->document)
-                            <a href="{{ asset('storage/' . $requestProject->document) }}" target="_blank"
-                               class="text-blue-600 hover:underline">Lihat Dokumen</a>
+                            <a href="{{ asset('storage/'.$requestProject->document) }}" target="_blank"
+                               class="text-indigo-600 hover:underline">
+                                Lihat Dokumen
+                            </a>
                         @else
-                            <span class="text-gray-400">Tidak ada dokumen</span>
+                            <span class="text-gray-400">Tidak ada</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 flex justify-center gap-2">
-                        <a href="{{ route('clients.project-requests.edit', $requestProject->id) }}"
-                           class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">Edit</a>
-                        <form action="{{ route('clients.project-requests.destroy', $requestProject->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus request ini?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">Hapus</button>
-                        </form>
+
+                    {{-- Aksi --}}
+                    <td class="px-4 py-2 text-sm">
+                        <div class="flex justify-center gap-2">
+
+                            {{-- Show --}}
+                            <a href="{{ route('clients.project-requests.show', $requestProject->id) }}"
+                               class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs shadow">
+                                Detail
+                            </a>
+
+                            {{-- Edit --}}
+                            <a href="{{ route('clients.project-requests.edit', $requestProject->id) }}"
+                               class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs shadow">
+                                Edit
+                            </a>
+
+                            {{-- Delete --}}
+                            <form action="{{ route('clients.project-requests.destroy', $requestProject->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus request ini?')">
+                                @csrf @method('DELETE')
+                                <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs shadow">
+                                    Hapus
+                                </button>
+                            </form>
+
+                        </div>
                     </td>
+
                 </tr>
+
                 @empty
                 <tr>
-                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500 text-sm">
                         Belum ada project request.
                     </td>
                 </tr>
                 @endforelse
+
             </tbody>
         </table>
     </div>
 
     {{-- Pagination --}}
     <div class="mt-4">
-        {{ $requests->links() }}
+        {{ $data->links() }}
     </div>
+
 </div>
 @endsection
