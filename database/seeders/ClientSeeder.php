@@ -26,18 +26,5 @@ class ClientSeeder extends Seeder
             'kode_organisasi' => 'ORG001',
         ]);
 
-        // Client::create([
-        //     'name' => 'CV Solusi Kreatif',
-        //     'nik' => '333333333333',
-        //     'phone' => '081987654321',
-        //     'kode_organisasi' => 'ORG002',
-        // ]);
-
-        // Client::create([
-        //     'name' => 'PT Data Nusantara',
-        //     'nik' => '1111111111',
-        //     'phone' => '081112223334',
-        //     'kode_organisasi' => 'ORG003',
-        // ]);
     }
 }

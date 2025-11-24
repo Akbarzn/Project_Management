@@ -29,21 +29,6 @@ class TaskService
         };
     }
 
-    public function create(array $data): Task
-    {
-        $karyawan = Auth::user()->karyawan;
-        abort_unless($karyawan !== null, 403, 'Unauthorized');
-
-        return DB::transaction(fn() => $this->repository->createTask([
-            'project_id' => $data['project_id'],
-            'karyawan_id' => $karyawan->id,
-            'task_name' => $karyawan->job_title,
-            'progress' => $data['progress'] ?? 0,
-            'catatan' => $data['catatan'] ?? '',
-            'start_date_task' => $data['start_date_task'] ?? now(),
-            'finish_date_task' => $data['finish_date_task'] ?? now() ?? null,
-        ]));
-    }
 
     public function update(Task $task, array $data): Task
     {
@@ -54,7 +39,10 @@ class TaskService
          
          
          return DB::transaction(function () use ($task, $data, $karyawan) {
+           
+            // simpan data lama untuk keperluan log
             $originalData = $task->only(['progress', 'catatan', 'start_date_task', 'finish_date_task']);
+           
             $today = now()->toDateString();
             $isFirstUpdate = $task->status === 'pending';
 
@@ -69,20 +57,24 @@ class TaskService
 
             $this->logChanges($task, $data, $originalData);
             
+            // update total biaya + status project
             if($task->project){
                 $this->projectService->updateTotalCost($task->project);
                 $this->projectService->updateStatus($task->project);
             }
 
-            // if($task->project){
-            //     $this->updateProjectCost($task->project);
-            //     $task->project->updateStatus();
-            // }
-
             return $task->fresh(['workLogs', 'karyawan', 'project']);
         });
     }
     
+
+    /**
+     * Summary of applyProgressUpdate
+     * atur update progress + status task
+     * @param Task $task
+     * @param array $data
+     * @return void
+     */
     private function applyProgressUpdate(Task $task, array $data): void{
         $progress = $data['progress'] ?? $task->progress;
         $catatan = $data['catatan'] ?? $task->catatan;
@@ -94,6 +86,7 @@ class TaskService
             'finish_date_task' => $data['finish_date_task'] ?? $task->finish_date_task ,
         ]);
     
+        // tentukna status berdasarkan progress
         if ($progress >= 100) {
             $task->status = 'complete';
             $task->finish_date_task = now();
@@ -110,8 +103,30 @@ class TaskService
 
     }
 
+    /**
+     * Summary of logWorkHours
+     * simpan jam kerja task per tanggal atauh hari 
+     * maks 7 jam kerja per hari
+     * @param Task $task
+     * @param int $karyawanId
+     * @param string $today
+     * @param float $hours
+     * @param bool $firstUpdate
+     * @return void
+     */
     private function logWorkHours(Task $task,int $karyawanId, string $today, float $hours, bool $firstUpdate ): void{
-        // hitung total jam kerja
+      
+        //tentukan batas jam kerja per hari
+       $endOfWorkTime = now()->setTime(24,0);
+
+    //   jika waktu skrng sudah melewati jam kerja maka akan ditolak
+    abort_if(
+        now()->greaterThan($endOfWorkTime),
+        400,
+        'Update jam kerja sudah melewati batas (24:00).'
+    );
+       
+        // hitung total sisa jam kerja
         $usedHours = TaskWorkLog::where('karyawan_id', $karyawanId)
         ->whereDate('work_date', $today)
         ->sum('hours');
@@ -121,7 +136,7 @@ class TaskService
         abort_if($remainingHours <= 0, 400,'Batas 7 jam kerja sudah tercapai hari ini.');
         abort_if($hours > $remainingHours, 400, "Jam kerja melebihi sisa {$remainingHours} jam hari ini.");
 
-        // simpan atau update workLog
+        // simpan atau update jam kerja
         TaskWorkLog::updateOrCreate([
             'task_id' => $task->id,
             'karyawan_id' => $karyawanId,
@@ -129,7 +144,7 @@ class TaskService
         ],
         ['hours' => $hours]);
 
-        // kalo pertama update tandai start date nya
+        // kalo pertama update ubah status dan start date
         if($firstUpdate){
             $task->update([
                 'status' => 'inwork',
@@ -138,6 +153,14 @@ class TaskService
         }
     }
 
+    /**
+     * Summary of logChanges
+     * simpan perubahan field ke tabel task_logs
+     * @param Task $task
+     * @param array $data
+     * @param array $originalData
+     * @return void
+     */
     protected function logChanges(Task $task, array $data, array $originalData): void{
         // dd('logChanges dipanggil', $data);
         $logFields = ['progress', 'catatan', 'start_date_task', 'finish_date_task'];

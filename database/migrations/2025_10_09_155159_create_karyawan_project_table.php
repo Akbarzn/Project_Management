@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('karyawan_id')->constrained('karyawans')->onDelete('cascade');
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             $table->decimal('cost_snapshot',12,2)->nullable();
+            $table->string('job_title_snapshot');
             $table->timestamps();
         });
     }

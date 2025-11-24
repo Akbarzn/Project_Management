@@ -51,7 +51,7 @@
             <div>
                 <label class="block text-gray-700 font-medium mb-1">Email</label>
                 <input type="email" name="email" value="{{ Auth::user()->email }}"
-                    class="w-full border rounded-lg px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed" readonly>
+                    class="w-full border rounded-lg px-3 py-2  text-gray-600 " >
             </div>
 
             {{-- PASSWORD BARU --}}
@@ -77,28 +77,10 @@
 
         {{-- FIELD KHUSUS KARYAWAN --}}
         @include('profile.edit-karyawan')
-
-
+        
+        
         {{-- FIELD KHUSUS CLIENT --}}
-        @if(Auth::user()->hasRole('client'))
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">NIK</label>
-                <input type="text" name="nik"
-                       value="{{ old('nik', Auth::user()->client->nik ?? '') }}"
-                       class="w-full border rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Kode Organisasi</label>
-                <input type="text" name="kode_organisasi"
-                       value="{{ old('kode_organisasi', Auth::user()->client->kode_organisasi) }}"
-                       class="w-full border rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-
-        </div>
-        @endif
+        @include('profile.edit-client')
 
 
         {{-- FOTO PROFIL --}}
@@ -110,7 +92,7 @@
                      class="w-20 h-20 rounded-full object-cover border shadow">
 
                 <div class="flex-grow">
-                    <input type="file" name="profile_photo"
+                    <input type="file" name="potho_profile"
                         class="block w-full text-sm text-gray-600 border rounded-lg cursor-pointer focus:ring-indigo-500 focus:border-indigo-500">
                     <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG — Maksimal 2MB</p>
                 </div>

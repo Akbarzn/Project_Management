@@ -16,15 +16,11 @@
                 Detail Task
             </h2>
 
-            {{-- <span class="text-white/80 text-sm">
-                ID Task : {{ $task->id }}
-            </span> --}}
         </div>
 
         {{-- CONTENT --}}
         <div class="p-8 space-y-8">
 
-            {{-- TASK SUMMARY --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 <!-- Nama Task -->

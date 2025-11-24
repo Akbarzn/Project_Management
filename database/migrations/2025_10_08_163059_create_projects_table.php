@@ -19,7 +19,6 @@ return new class extends Migration
             $table->date('finish_date_project');
             $table->enum('status', ['pending','ongoing', 'overdue', 'complete'])->default('pending');
             $table->decimal('total_cost', 15)->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
             $table->boolean('is_approved')->default(false);
             $table->timestamps();

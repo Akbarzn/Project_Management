@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services;
 
@@ -6,27 +6,32 @@ use App\Repositories\Contracts\ClientRepositoryInterface;
 use App\Models\User;
 use App\Models\Client;
 use Illuminate\Support\Facades\DB;
-class ClientService{
+class ClientService
+{
     protected ClientRepositoryInterface $repository;
 
-    public function __construct(ClientRepositoryInterface $repository){
+    public function __construct(ClientRepositoryInterface $repository)
+    {
         // dependency injection service bergantung pada interface(contratc)
         $this->repository = $repository;
     }
 
     // ambil semua client via repository
-    public function listClients(?string $search = null){
+    public function listClients(?string $search = null)
+    {
         return $this->repository->getAllClient($search);
     }
 
     // tampilkan client berdasarkan id
-    public function showClient(int $Id): ?Client{
+    public function showClient(int $Id): ?Client
+    {
         return $this->repository->findById($Id);
     }
 
     // buat client
-    public function createClient(array $data): Client{
-        return DB::transaction(function () use ($data){
+    public function createClient(array $data): Client
+    {
+        return DB::transaction(function () use ($data) {
             // buat user baru
             $user = User::create([
                 'name' => $data['name'],
@@ -35,7 +40,7 @@ class ClientService{
             ]);
 
             // beri role client
-            if(method_exists($user, 'assignRole')){
+            if (method_exists($user, 'assignRole')) {
                 $user->assignRole('client');
             }
 
@@ -53,20 +58,31 @@ class ClientService{
     }
 
     // update client dgn mengembalikan model sesuai repository
-    public function updateClient(Client $client, array $data): Client{
-        DB::transaction(function () use ($client, $data){
+    public function updateClient(Client $client, array $data): Client
+    {
+        DB::transaction(function () use ($client, $data) {
             // update client
-         $updatedModel = $this->repository->update($client,[
+             $this->repository->update($client, [
                 'name' => $data['name'],
                 'nik' => $data['nik'],
                 'phone' => $data['phone'],
                 'kode_organisasi' => $data['kode_organisasi'],
             ]);
 
+            $user = $client->user;
+
             // update user
-            $client->user->update([
+            $userUpdate = [
                 'name' => $data['name'] ?? $client->user->name,
-            ]);
+                'email' => $data['email'] ?? $client->user->email,
+        ];
+
+        // update password hanya jika DIISI
+        if (!empty($data['password'])) {
+            $userUpdate['password'] = bcrypt($data['password']);
+        }
+
+        $user->update($userUpdate);
 
             // sync role
             $client->user->syncRoles('client');
@@ -76,10 +92,11 @@ class ClientService{
     }
 
     // delete dgn kembalikan true/false
-    public function deleteClient(Client $client): bool{
-     return DB::transaction(function () use ($client){
+    public function deleteClient(Client $client): bool
+    {
+        return DB::transaction(function () use ($client) {
             $client->user()->delete();
-            $this->repository->delete($client);
+            return $client->delete();
         });
     }
 }

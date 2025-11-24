@@ -16,15 +16,8 @@
                 Kelola seluruh data project.
             </p>
         </div>
-
-        {{-- <a href="{{ route('manager.projects.requests') }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg shadow-indigo-300/40 transition">
-            <i class="fas fa-file-alt mr-2"></i>
-            Lihat Request Project
-        </a> --}}
     </div>
 
-    {{-- TABEL PROJECT --}}
     @if($projects->count() > 0)
 
         <div class="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden">
@@ -70,7 +63,7 @@
                                     $statusClass = match($project->status) {
                                         'ongoing'   => 'bg-yellow-100 text-yellow-800',
                                         'completed' => 'bg-green-100 text-green-800',
-                                        default     => 'bg-gray-100 text-gray-800'
+                                        'overdue'    => 'bg-red-500 text-gray-100'
                                     };
                                 @endphp
 

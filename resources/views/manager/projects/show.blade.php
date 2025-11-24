@@ -5,7 +5,6 @@
 @section('content')
 <div class="max-w-6xl mx-auto p-6 space-y-10">
 
-    {{-- ========== HEADER PROJECT ========== --}}
     <div class="bg-white shadow-xl rounded-2xl p-8 border border-gray-200">
 
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -23,12 +22,12 @@
             </a>
         </div>
 
-        {{-- Informasi Proyek --}}
+        {{-- Informasi Project --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 
-            {{-- Klien --}}
+            {{-- Client --}}
             <div class="bg-gray-50 p-5 rounded-xl border flex flex-col">
-                <span class="text-sm font-semibold text-gray-600">Klien</span>
+                <span class="text-sm font-semibold text-gray-600">Client</span>
                 <span class="mt-1 text-gray-800 font-bold text-lg">
                     {{ $project->client->name ?? '-' }}
                 </span>
@@ -63,7 +62,7 @@
 
             {{-- Catatan --}}
             <div class="md:col-span-2 bg-gray-50 p-5 rounded-xl border">
-                <span class="text-sm font-semibold text-gray-600">Catatan</span>
+                <span class="text-sm font-semibold text-gray-600">Deskripsi Project</span>
                 <p class="text-gray-800 mt-2">{{ $project->projectRequest->description ?? '-' }}</p>
             </div>
 
@@ -93,7 +92,7 @@
 
     </div>
 
-    {{-- ========== BREAKDOWN COST TABLE ========== --}}
+    {{-- BREAKDOWN COST TABLE  --}}
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
 
         <div class="bg-indigo-600 px-6 py-4">

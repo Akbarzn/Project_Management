@@ -7,7 +7,7 @@ use App\Models\Karyawan;
 use App\Models\Client;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Repositories\BaseRepository;
+use App\Repositories\Eloquent\BaseRepository;
 use App\Repositories\Contracts\UserRepositoryInterface;
 
 /**

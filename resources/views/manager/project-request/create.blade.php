@@ -4,7 +4,7 @@
 <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
     <h2 class="text-2xl font-bold mb-6 text-gray-800">Create Project Request</h2>
 
-    {{-- 🔹 Form Create Project Request --}}
+    {{--  Form Create Project Request --}}
     <form action="{{ route('manager.project-request.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
@@ -15,21 +15,23 @@
                 class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 text-gray-600">
         </div>
 
-        {{-- Pilih Client --}}
+       {{-- Pilih Client --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-1">Pilih Client</label>
-            <select name="client_id" required
-            
+            <select name="client_id"
                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                onchange="if(this.value) window.location='{{ route('manager.project-request.create') }}?client_id=' + this.value;">
                 
-        onchange="if(this.value) window.location='{{ route('manager.project-request.create') }}?client_id=' + this.value;">
                 <option value="">-- Pilih Client --</option>
+
                 @foreach ($clients as $client)
-                    <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
+                    <option value="{{ $client->id }}"
+                        {{ (request('client_id') ?? old('client_id')) == $client->id ? 'selected' : '' }}>
                         {{ $client->name }}
                     </option>
                 @endforeach
             </select>
+
             @error('client_id')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
@@ -115,4 +117,6 @@
 
     </form>
 </div>
+
+
 @endsection

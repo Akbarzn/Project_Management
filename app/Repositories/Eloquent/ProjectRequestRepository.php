@@ -6,7 +6,7 @@ use App\Models\ProjectRequest;
 use App\Models\Project;
 use App\Repositories\Contracts\ProjectRequestRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
-use App\Repositories\BaseRepository;
+use App\Repositories\Eloquent\BaseRepository;
 
 class ProjectRequestRepository extends BaseRepository implements ProjectRequestRepositoryInterface
 {
@@ -46,7 +46,7 @@ class ProjectRequestRepository extends BaseRepository implements ProjectRequestR
 
     public function findWithRelations(int $id): ?ProjectRequest
     {
-        return $this->model->with('client')->findOrFail($id);
+        return parent::findById($id, ['client', 'projects']);
     }
 
     public function find(int $id): ProjectRequest
@@ -62,14 +62,13 @@ class ProjectRequestRepository extends BaseRepository implements ProjectRequestR
             ->first();
     }
 
-    public function update(Model $model, array $data): ProjectRequest
+    public function update(Model $projectRequest, array $data): ProjectRequest
     {
-        $model->update($data);
-        return $model;
+        return parent::update($projectRequest, $data);
     }
 
-    public function delete(Model $model): bool
+    public function delete(Model $projectRequest): bool
     {
-        return $model->delete();
+        return parent::delete($projectRequest);
     }
 }

@@ -2,12 +2,8 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto p-6 space-y-10">
-{{-- ========================== --}}
-{{-- HEADER --}}
-{{-- ========================== --}}
 <div class="flex justify-between items-start mb-6">
 
-    {{-- Judul & Detail --}}
     <div>
         <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
             <i class="fas fa-history text-indigo-600"></i>
@@ -22,7 +18,6 @@
         </p>
     </div>
 
-    {{-- Tombol Kembali --}}
     <div>
         <a href="{{ route('karyawan.tasks.index') }}"
            class="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center gap-2 bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-200">
@@ -35,9 +30,7 @@
 
 
 
-    {{-- ========================================================== --}}
-    {{-- SECTION 1: LOG PERUBAHAN TASK --}}
-    {{-- ========================================================== --}}
+    {{--  LOG PERUBAHAN TASK --}}
    <div class="overflow-x-auto">
     <table class="min-w-full text-sm border border-gray-300 rounded-lg">
         <thead class="bg-indigo-600 text-white uppercase text-xs">
@@ -100,9 +93,7 @@
 </div>
 
 
-    {{-- ========================================================== --}}
-    {{-- SECTION 2: RIWAYAT JAM KERJA --}}
-    {{-- ========================================================== --}}
+    {{-- RIWAYAT JAM KERJA --}}
     <div class="bg-white shadow-xl border border-gray-200 rounded-xl p-6">
         <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <i class="fas fa-clock text-indigo-600"></i>

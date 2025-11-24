@@ -26,16 +26,32 @@ class UpdateProjectRequest extends FormRequest
             'name_project' => ['sometimes', 'string'],
             'kategori' => ['sometimes', 'string', 'in:New Aplikasi,Update Aplikasi'],
             'description' => ['sometimes', 'string'],
-            'document' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:2048'],
+            'document' => ['nullable', 'file', 'mimes:pdf,doc,docx,png,jpg,jpeg', 'max:2048'],
             'status' => ['sometimes', 'in:pending,approve,rejected'],
 
-               'client_id' => $user->hasRole('manager')
-            ? 'required|exists:clients,id'
-            : 'prohibited' // ❗ client tidak boleh mengirim client_id
+            //  client tidak boleh mengirim client_id
+            // manager bisa ubah client_id
+            'client_id' => $user->hasRole('manager')
+                ? 'required|exists:clients,id'
+                : 'prohibited' 
+
         ];
-        // if(auth()->user()->hasRole('manager')){
-        //     $rules['client_id'] = ['required', 'exists:clients,id'];
-        // }
-        // return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name_project.max' => 'Nama project maksimal 250 karakter.',
+
+            'kategori.in' => 'Kategori harus salah satu: New Aplikasi atau Update Aplikasi.',
+
+            'document.mimes' => 'Dokumen harus berupa PDF, DOC, DOCX, PNG, JPG, atau JPEG.',
+            'document.max'   => 'Dokumen maksimal 2 MB.',
+
+            'status.in' => 'Status tidak valid.',
+
+            'client_id.exists'   => 'Client tidak ditemukan.',
+            'client_id.prohibited' => 'Anda tidak boleh mengubah client_id.',
+        ];
     }
 }

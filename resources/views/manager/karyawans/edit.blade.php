@@ -12,7 +12,6 @@
                     <i class="fas fa-user-tie mr-3"></i>
                     Ubah Data Karyawan
                 </h2>
-                {{-- Ensure $karyawan is defined and has a name property --}}
                 <span class="text-white text-lg font-medium">{{ $karyawan->name ?? 'Karyawan' }}</span>
             </div>
 
@@ -38,21 +37,50 @@
                         <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
                         <input type="text" name="name" id="name" value="{{ old('name', $karyawan->name) }}"
                             class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name') border-red-500 @enderror"
-                            placeholder="Masukkan nama lengkap karyawan"
-                            required />
+                            placeholder="Masukkan nama lengkap karyawan" required />
                         @error('name')
                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
+                    {{-- EMAIL --}}
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                        <input type="email" name="email" id="email"
+                            value="{{ old('email', $karyawan->user->email ?? '') }}"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('email') border-red-500 @enderror"
+                            placeholder="Masukkan email karyawan" required>
+                        @error('email')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- PASSWORD BARU (OPSIONAL) --}}
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password Baru</label>
+                        <input type="password" name="password" id="password"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Biarkan kosong jika tidak diubah">
+                    </div>
+
+                    {{-- KONFIRMASI PASSWORD --}}
+                    <div>
+                        <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1">Konfirmasi
+                            Password</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Ulangi password baru">
+                    </div>
+
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- NIK --}}
                         <div>
-                            <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK (Nomor Induk Karyawan)</label>
+                            <label for="nik" class="block text-sm font-semibold text-gray-700 mb-1">NIK (Nomor Induk
+                                Karyawan)</label>
                             <input type="text" name="nik" id="nik" value="{{ old('nik', $karyawan->nik) }}"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('nik') border-red-500 @enderror"
-                                placeholder="NIK"
-                                required />
+                                placeholder="NIK" required />
                             @error('nik')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
@@ -60,7 +88,8 @@
 
                         {{-- Telepon --}}
                         <div>
-                            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon</label>
+                            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-1">Nomor
+                                Telepon</label>
                             <input type="text" name="phone" id="phone" value="{{ old('phone', $karyawan->phone) }}"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('phone') border-red-500 @enderror"
                                 placeholder="Contoh: 0812xxxxxx" />
@@ -70,13 +99,14 @@
                         </div>
                     </div>
 
-                    {{-- Jabatan & Biaya Group --}}
+                    {{-- Jabatan  --}}
                     <hr class="border-gray-200 pt-4">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {{-- Job Title (Pilihan/Tipe Pekerjaan) --}}
+                        {{-- Job Title  --}}
                         <div>
-                            <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title / Tipe</label>
+                            <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title /
+                                Tipe</label>
                             @php
                                 $jobTitles = [
                                     'Analisis Proses Bisnis',
@@ -103,13 +133,13 @@
                             @enderror
                         </div>
 
-                        {{-- Jabatan (Detail Jabatan) --}}
+                        {{-- Jabatan  --}}
                         <div>
-                            <label for="jabatan" class="block text-sm font-semibold text-gray-700 mb-1">Jabatan Detail</label>
-                            <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan', $karyawan->jabatan) }}"
+                            <label for="jabatan" class="block text-sm font-semibold text-gray-700 mb-1">Jabatan</label>
+                            <input type="text" name="jabatan" id="jabatan"
+                                value="{{ old('jabatan', $karyawan->jabatan) }}"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('jabatan') border-red-500 @enderror"
-                                placeholder="Jabatan spesifik di organisasi"
-                                required>
+                                placeholder="Jabatan spesifik di organisasi" required>
                             @error('jabatan')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
@@ -117,12 +147,12 @@
 
                         {{-- Biaya --}}
                         <div class="col-span-1 md:col-span-2">
-                            <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1">Biaya / Hari (Rp)</label>
+                            <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1">Biaya / Hari
+                                (Rp)</label>
                             <input type="number" step="1" name="cost" id="cost"
                                 value="{{ old('cost', $karyawan->cost) }}"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
-                                placeholder="Contoh: 500000"
-                                required />
+                                placeholder="Contoh: 500000" required />
                             @error('cost')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror

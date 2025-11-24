@@ -3,7 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Project;
-use App\Repositories\BaseRepository;
+use App\Repositories\Eloquent\BaseRepository;
 use App\Repositories\Contracts\ProjectRepositoryInterface;
 
 class ProjectRepository extends BaseRepository implements ProjectRepositoryInterface{
@@ -25,7 +25,7 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
     }
 
     public function findWithRelations(int $id): Project{
-        return $this->model->with(['client', 'projectRequest', 'karyawans', 'tasks.karyawan'])->findOrFail($id);
+        return parent::findById($id,['client', 'projectRequest', 'karyawans', 'tasks.karyawan']);
     }
 
     public function createProject(array $data) :Project{
@@ -34,10 +34,10 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
     }
 
     public function updateProject(Project $project, array $data): Project{
-        return $this->update($project, $data);
+        return parent::update($project, $data);
     }
 
     public function deleteProject(Project $project): bool{
-        return $this->delete($project);
+        return parent::delete($project);
     }
 }

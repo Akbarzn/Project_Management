@@ -5,7 +5,6 @@
 
 <div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center">
         <div>
             <h2 class="text-3xl font-extrabold text-gray-800 flex items-center gap-3">
@@ -22,12 +21,6 @@
     <div class="bg-white shadow-xl rounded-xl border border-gray-200 p-5">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 
-            {{-- SEARCH --}}
-            {{-- <input type="text"
-                   name="search"
-                   placeholder="Cari project atau karyawan..."
-                   value="{{ request('search') }}"
-                   class="border rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"> --}}
 
             {{-- PROJECT FILTER --}}
             <select name="project_id"
@@ -103,7 +96,7 @@
                                 {{ $task->project->projectRequest->name_project ?? '-' }}
                             </td>
 
-                            {{-- BADGE STATUS --}}
+                            {{--  STATUS --}}
                             <td class="px-4 py-3">
                                 @php
                                     $statusClass = [

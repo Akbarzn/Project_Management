@@ -2,11 +2,14 @@
 
 namespace App\Repositories\Contracts;
 
-interface UserRepositoryInterface{
-    public function getAlluserWithFilter(?string $search = null);
-    public function findUserById(int $id);
-    public function  createUser(array $data);
-    public function updateUser(array $data, $user);
+use App\Repositories\Contracts\BaseRepositoryInterface;
 
-    public function deleteUser($user);
+interface UserRepositoryInterface extends BaseRepositoryInterface{ 
+    public function getAlluserWithFilter(?string $search = null);
+
+    public function createUser (array $data);
+
+    public function updateUser(array $data, User $user);
+
+    public function deleteUser(User $user);
 }

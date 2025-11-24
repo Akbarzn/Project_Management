@@ -25,11 +25,12 @@ class UpdateClientRequest extends FormRequest
 
         return [
             'name' => 'required|max:50',
-            
             'nik' => 'nullable|unique:clients,nik,' . $clientId, 
-            
             'phone' => 'nullable|max:15',
             'kode_organisasi' => 'nullable|max:10',
+            // FIELD USER
+        'email' => 'nullable|email|unique:users,email,' . $this->client->user->id,
+        'password' => 'nullable|min:6|confirmed'
         ];
     }
 }

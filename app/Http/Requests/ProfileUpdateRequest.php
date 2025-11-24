@@ -18,7 +18,7 @@ class ProfileUpdateRequest extends FormRequest
 {
     $user = $this->user() ?? Auth::user();
 
-    // Awali dengan aturan umum
+    // untuk semua role
     $rules = [
         'name' => ['required', 'string', 'max:255'],
         'email' => [
@@ -33,14 +33,18 @@ class ProfileUpdateRequest extends FormRequest
         'password' => ['nullable', 'confirmed', 'min:8'],
     ];
 
-    
+    // untuk karywan
     if ($user && $user->hasRole('karyawan')) {
         $rules = array_merge($rules, [
             'nik' => ['nullable', 'string', 'max:30'],
             'phone' => ['nullable', 'string', 'max:15'],
+            'jabatan' => ['nullable', 'string', 'max:50'],
+            'job_title' => ['nullable', 'string', 'max:50'],
+            'cost' => ['nullable', 'numeric'],
         ]);
     }
 
+    // untuk client
     if ($user && $user->hasRole('client')) {
         $rules = array_merge($rules, [
             'nik' => ['nullable', 'string', 'max:15'],
@@ -53,9 +57,30 @@ class ProfileUpdateRequest extends FormRequest
 }
 
 
-    public function messages():array{
-        return[
-            'password.confirmed' => 'Konfirmasi password tidak cocok'
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama wajib diisi.',
+            'name.max'      => 'Nama maksimal 255 karakter.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email'    => 'Format email tidak valid.',
+            'email.unique'   => 'Email sudah digunakan.',
+
+            'password.min'        => 'Password minimal 8 karakter.',
+            'password.confirmed'  => 'Konfirmasi password tidak sesuai.',
+
+            'potho_profile.image' => 'File harus berupa gambar.',
+            'potho_profile.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+            'potho_profile.max'   => 'Ukuran foto maksimal 2MB.',
+
+            'nik.max' => 'NIK terlalu panjang.',
+            'phone.max' => 'Nomor telepon terlalu panjang.',
+            'jabatan.max' => 'Jabatan maksimal 50 karakter.',
+            'job_title.max' => 'Job title maksimal 50 karakter.',
+            'cost.numeric' => 'Cost harus berupa angka.',
+
+            'kode_organisasi.max' => 'Kode organisasi maksimal 15 karakter.',
         ];
     }
 

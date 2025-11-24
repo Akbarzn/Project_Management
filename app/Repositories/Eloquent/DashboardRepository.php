@@ -3,7 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\{Karyawan,Task,Client,Project};
-use App\Repositories\BaseRepository;
+use App\Repositories\Eloquent\BaseRepository;
 use App\Repositories\Contracts\DashboardRepositoryInterface;
 
 class DashboardRepository extends BaseRepository implements DashboardRepositoryInterface{

@@ -6,23 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTaskRequest extends FormRequest
 {
-    /**
-     * Tentukan apakah pengguna berwenang untuk membuat permintaan ini.
-     */
     public function authorize(): bool
     {
-        // ✅ Authorize harus mengembalikan boolean (true atau false).
-        // Biasanya dicek apakah karyawan yang login adalah pemilik task ini.
-        // Untuk contoh ini, kita kembalikan true agar validasi bisa berjalan.
         return true; 
     }
 
-    /**
-     * Dapatkan aturan validasi yang berlaku untuk permintaan (rules).
-     */
     public function rules(): array
     {
-        // ✅ Aturan validasi harus berada di sini dan mengembalikan array.
         return [
             'project_id'      => 'nullable|exists:projects,id',
             'progress'        => 'nullable|integer|min:0|max:100',
@@ -34,18 +24,23 @@ class UpdateTaskRequest extends FormRequest
         ];
     }
 
-    /**
-     * Dapatkan pesan kesalahan validasi khusus.
-     */
-    public function messages(): array
+     public function messages(): array
     {
         return [
-            'project_id.exists'     => 'Project tidak valid.',
-            'progress.integer'      => 'Progress harus berupa angka.',
-            'progress.min'          => 'Progress minimal 0%.',
-            'progress.max'          => 'Progress maksimal 100%.',
-            'catatan.max'       => 'Deskripsi/Catatan maksimal 500 karakter.', 
-            'start_date_task.date'  => 'Tanggal mulai task tidak valid.',
+            'project_id.exists' => 'Project tidak valid.',
+
+            'progress.integer' => 'Progress harus berupa angka.',
+            'progress.min'     => 'Progress minimal 0%.',
+            'progress.max'     => 'Progress maksimal 100%.',
+
+            'hours.numeric' => 'Jam kerja harus berupa angka.',
+            'hours.max'     => 'Jam kerja maksimal 24 jam.',
+
+            'catatan.max' => 'Catatan maksimal 500 karakter.',
+
+            'start_date_task.date' => 'Tanggal mulai task tidak valid.',
+            'finish_date_task.date' => 'Tanggal selesai task tidak valid.',
+            'finish_date_task.after_or_equal' => 'Tanggal selesai tidak boleh sebelum tanggal mulai.',
         ];
     }
 }

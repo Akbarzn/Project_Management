@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\Project\StoreProjectRequest;
-use App\Http\Requests\Manager\Project\UpdateProjectRequest;
+use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Services\ProjectService;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -11,8 +11,18 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+    /**
+     * Summary of service
+     * simpan project service ke property
+     * @var ProjectService
+     */
     protected ProjectService $service;
 
+    /**
+     * Summary of __construct
+     * inject projectService ke controller
+     * @param ProjectService $service
+     */
     public function __construct(ProjectService $service){
         $this->service = $service;
     }
@@ -29,7 +39,6 @@ class ProjectController extends Controller
     }
 
     public function show($id){
-        // $data = $this->service->showProject($id);
         return view('manager.projects.show', $this->service->showProject($id));
     }
 

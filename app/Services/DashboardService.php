@@ -47,6 +47,7 @@ class DashboardService{
 
     /**
      * ambil data project detail 
+     * untuk ajax
      */
     public function getProjectDetail($id){
         return $this->repository->getProjectDetail($id);

@@ -19,11 +19,6 @@
             class="w-full border rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
         </div>
 
-        <div class="mb-4">
-            <label for="phone" class="block text-gray-700 font-medium mb-1">Phone</label>
-            <input type="text" name="phone" value="{{ old('phone', Auth::user()->karyawan->phone) }}"
-            class="w-full border rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-        </div>
 
         <div class="mb-4">
             <label for="job_title" class="block text-gray-700 font-medium mb-1">Job Title</label>
@@ -47,10 +42,5 @@
             </select>
         </div>
 
-        <div class="mb-4">
-            <label for="cost" class="block text-gray-700 font-medium mb-1">Cost</label>
-            <input type="number" name="cost" value="{{ old('cost', Auth::user()->karyawan->cost) }}"
-            class="w-full border rounded-lg px-3 py2 focus:ring-indigo-500 focus:border-indigo-500">
-        </div>
     </div>
 @endif

@@ -18,108 +18,87 @@ class Project extends Model
         'start_date_project',
         'finish_date_project',
         'status',
-        'created_by',
         'approved_by',
         'is_approved',
         'total_cost',
     ];
 
-    // Relasi ke client
+    /**
+     * Summary of client
+     * relasi one to many
+     * client dengan project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Client, Project>
+     */
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
 
-    // Relasi ke project request
+    /**
+     * Summary of projectRequest
+     * relasi one to one 
+     * project dengan projectRequest
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<ProjectRequest, Project>
+     */
     public function projectRequest()
     {
         return $this->belongsTo(ProjectRequest::class, 'request_id');
     }
 
-    // Relasi ke user (manager) yang membuat project
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
+    /**
+     * Summary of creator
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Project>
+     */
+    // public function creator()
+    // {
+    //     return $this->belongsTo(User::class, 'created_by');
+    // }
 
-    // Relasi ke user (manager) yang menyetujui project
+    /**
+     * Summary of approver
+     * manger bisa approve atau menyetujui project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Project>
+     */
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    // Relasi ke karyawan yang ditugaskan
+    /**
+     * Summary of karyawans
+     * relasi many to many
+     * karyawan dgn project
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Karyawan, Project, \Illuminate\Database\Eloquent\Relations\Pivot>
+     */
     public function karyawans()
 {
     return $this->belongsToMany(Karyawan::class, 'karyawan_projects','project_id','karyawan_id')
-    ->withPivot('cost_snapshot')
+    ->withPivot('cost_snapshot', 'job_title_snapshot')
     ->withTimestamps();
 }
 
+/**
+ * Summary of tasks
+ * relasi one to many
+ * tasks dengan project
+ * @return \Illuminate\Database\Eloquent\Relations\HasMany<Task, Project>
+ */
 public function tasks(){
     return $this->hasMany(Task::class, 'project_id');
 }
 
+/**
+ * Summary of getKaryawanCost
+ * fungsi untuk hitung biaya
+ * ambil cost karyawan berdasarkan pivot snapshot
+ * dan untuk hitung total cost
+ * @param mixed $karyawanId
+ */
 public function getKaryawanCost($karyawanId)
 {
     $karyawan = $this->karyawans()->where('karyawan_id', $karyawanId)->first();
     return $karyawan ? $karyawan->pivot->cost_snapshot : 0;
 }
-public function calculateTotalCost():float{
-     return (float) $this->tasks()
-        ->with(['karyawan', 'workLogs'])
-        ->get()
-        ->sum(fn($task) => $task->calculateCost());
-}
-
-public function recalculateTotalCost()
-{
-    $total = $this->tasks()
-        ->with(['workLogs.karyawan'])
-        ->get()
-        ->sum(function ($task) {
-            return $task->workLogs->sum(function ($log) {
-                $rate = $log->karyawan->cost ?? 0;
-                return $log->hours * $rate;
-            });
-        });
-
-    $this->update(['total_cost' => $total]);
-    return $total;
-}
-
-      // 🧠 Accessor durasi hari kerja (dibulatkan)
-    public function getDurationDaysAttribute()
-    {
-        if (!$this->start_date_task) return 0;
-
-        $start = Carbon::parse($this->start_date_task);
-        $end = $this->finish_date_task ? Carbon::parse($this->finish_date_task) : now();
-
-        $days = ceil($start->diffInHours($end) / 24);
-        return max(1, $days);
-    }
-
-    // 🧠 Accessor jam kerja
-    public function getWorkHoursAttribute()
-    {
-        return $this->duration_days * 7;
-    }
-
-    public function updateStatus(){
-        $endProject = $this->tasks()->where('status', '!=', 'complete')->count() === 0;
-        $today = now()->toDateString();
-
-        if($endProject){
-            $this->update([
-                'status' => 'complete',
-                'finish_date_project' => now(),
-            ]);
-        }elseif($this->finish_date_project && $today > $this->finish_date_project){
-            $this->update(['status' => 'overdue']);
-        }else{
-            $this->update(['status' => 'ongoing']);
-        }
-    }
 
 }

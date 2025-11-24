@@ -12,16 +12,14 @@
                 <i class="fas fa-check-circle mr-3"></i>
                 Persetujuan Project Baru
             </h2>
-            {{-- <span class="text-sm font-light opacity-80">Finalisasi Project dari Request</span> --}}
         </div>
 
         <div class="p-8">
-            {{-- Form Starts Here --}}
             <form action="{{ route('manager.projects.store') }}" method="POST" class="space-y-8">
                 @csrf
                 <input type="hidden" name="request_id" value="{{ $projectRequest->id }}">
 
-                {{-- SECTION: Informasi Permintaan Project --}}
+                {{-- Informasi Permintaan Project --}}
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 shadow-inner">
                     <h3 class="text-xl font-bold text-gray-700 mb-4 border-b pb-2">
                         Detail Permintaan Project
@@ -53,7 +51,7 @@
                             </div>
                         </div>
 
-                        {{-- Dokumen / Lampiran --}}
+                        {{-- Dokumen  --}}
                         <div>
                             <span class="block font-semibold text-blue-700 mb-1">Dokumen Lampiran</span>
 
@@ -90,7 +88,7 @@
                     </div>
                 </div>
 
-                {{-- SECTION: Pengaturan Project --}}
+                {{-- Pengaturan Project --}}
                 <h3 class="text-xl font-bold text-gray-700 border-b pb-2">Tetapkan Detail Project</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -112,7 +110,7 @@
 
                 </div>
 
-                {{-- SECTION: Alokasi Karyawan --}}
+                {{--  Alokasi Karyawan --}}
                 <h3 class="text-xl font-bold text-gray-700 border-b pb-2 pt-4">Alokasi Tim Karyawan</h3>
                 <p class="text-sm text-gray-500 mb-4">Pilih karyawan yang sesuai untuk setiap peran yang dibutuhkan.</p>
 

@@ -11,6 +11,11 @@ class TaskPolicy{
         return $user->hasRole('manager') || $task->karyawan_id === $user->karyawan->id;
     }
 
+    public function create(User $user, Task $task): bool
+    {
+        return $user->hasRole('manager') || $task->karyawan_id === $user->karyawan->id;
+    }
+
     public function update(User $user, Task $task): bool{
         return $user->hasRole('manager') || $task->karyawan_id === $user->karyawan->id;
     }

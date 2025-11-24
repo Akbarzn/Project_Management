@@ -8,20 +8,28 @@
     {{-- === Statistik Header === --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white shadow rounded-xl p-5 text-center border border-gray-100 hover:shadow-lg transition">
-            <h3 class="text-sm font-semibold text-gray-500">Total Karyawan</h3>
-            <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalKaryawan }}</p>
+            <a href="{{ route('manager.karyawans.index') }}">
+                <h3 class="text-sm font-semibold text-gray-500">Total Karyawan</h3>
+                <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalKaryawan }}</p>
+            </a>
         </div>
         <div class="bg-white shadow rounded-xl p-5 text-center border border-gray-100 hover:shadow-lg transition">
-            <h3 class="text-sm font-semibold text-gray-500">Total Client</h3>
-            <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalClient }}</p>
+            <a href="{{ route('manager.clients.index') }}">
+                <h3 class="text-sm font-semibold text-gray-500">Total Client</h3>
+                <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalClient }}</p>
+            </a>
         </div>
         <div class="bg-white shadow rounded-xl p-5 text-center border border-gray-100 hover:shadow-lg transition">
-            <h3 class="text-sm font-semibold text-gray-500">Total Project</h3>
-            <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalProject }}</p>
+          <a href="{{route('manager.projects.index')}}">
+              <h3 class="text-sm font-semibold text-gray-500">Total Project</h3>
+              <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalProject }}</p>
+            </a>
         </div>
         <div class="bg-white shadow rounded-xl p-5 text-center border border-gray-100 hover:shadow-lg transition">
-            <h3 class="text-sm font-semibold text-gray-500">Total Task</h3>
-            <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalTask }}</p>
+            <a href="{{ route('manager.tasks.index') }}">
+                <h3 class="text-sm font-semibold text-gray-500">Total Task</h3>
+                <p class="text-3xl font-bold text-indigo-600 mt-2">{{ $totalTask }}</p>
+            </a>
         </div>
     </div>
 
@@ -31,7 +39,7 @@
     {{-- CHART KARYAWAN BERDASARKAN TASK (30%) --}}
     <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100 w-full lg:w-[30%]">
         <h4 class="text-lg font-semibold text-gray-800 mb-4">Karyawan Berdasarkan Task</h4>
-        <canvas id="karyawanTaskChart" height="250"></canvas>
+        <canvas id="karyawanTaskChart" height="250" style="cursor: pointer"></canvas>
     </div>
 
     {{-- CHART JUMLAH TASK PER KARYAWAN (70%) --}}
@@ -44,77 +52,8 @@
 
 </div>
 
-    {{-- === Daftar Project === --}}
-    {{-- <div class="bg-white shadow rounded-xl border border-gray-100 overflow-hidden">
-        <div class="flex justify-between items-center bg-indigo-600 px-6 py-3">
-            <h3 class="text-white font-semibold text-lg">📁 Daftar Project</h3>
-            <a href="{{ route('manager.projects.create') }}" 
-               class="bg-white text-indigo-700 px-4 py-2 text-sm font-semibold rounded-md shadow hover:bg-gray-100 transition">
-                + Tambah Project
-            </a>
-        </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-gray-700">
-                <thead class="bg-indigo-100 text-indigo-800 uppercase">
-                    <tr>
-                        <th class="px-4 py-3 text-left">No</th>
-                        <th class="px-4 py-3 text-left">Nama Project</th>
-                        <th class="px-4 py-3 text-left">Client</th>
-                        <th class="px-4 py-3 text-left">Status</th>
-                        <th class="px-4 py-3 text-left">Disetujui Oleh</th>
-                        <th class="px-4 py-3 text-left">Mulai</th>
-                        <th class="px-4 py-3 text-left">Selesai</th>
-                        <th class="px-4 py-3 text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y">
-                    @forelse ($projects as $index => $project)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                            <td class="px-4 py-2 font-semibold">{{ $project->projectRequest->name_project ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $project->client->name ?? '-' }}</td>
-                            <td class="px-4 py-2">
-                                <span class="px-2 py-1 text-xs rounded-full 
-                                    @if($project->status == 'complete') bg-green-100 text-green-700
-                                    @elseif($project->status == 'ongoing') bg-yellow-100 text-yellow-700
-                                    @elseif($project->status == 'overdue') bg-red-100 text-red-700
-                                    @else bg-gray-100 text-gray-600 @endif">
-                                    {{ ucfirst($project->status) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-2">{{ $project->approver->name ?? 'Manager' }}</td>
-                            <td class="px-4 py-2">{{ $project->start_date_project ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $project->finish_date_project ?? '-' }}</td>
-                            <td class="px-4 py-2 text-center space-x-2">
-                                <a href="{{ route('manager.projects.show', $project->id) }}" 
-                                   class="text-blue-600 hover:text-blue-800" title="Lihat">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('manager.projects.edit', $project->id) }}" 
-                                   class="text-yellow-500 hover:text-yellow-700" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('manager.projects.destroy', $project->id) }}" method="POST" class="inline">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Yakin ingin hapus project ini?')" 
-                                            class="text-red-600 hover:text-red-800" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="px-4 py-4 text-center text-gray-500">Belum ada project.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div> --}}
-
-    {{-- detail project --}}
+    {{-- DETAIL PROJECT --}}
     <select name="" id="projectSelect" class="border rounded p-2">
         <option value="">-- Pilih Project --</option>
         @foreach ($projects as $project )
@@ -153,6 +92,19 @@
             cutout: '70%',
             plugins: {
                 legend: { display: false }
+            },
+            onClick: (event,elements)=> {
+                if(elements.length === 0) return;
+
+                const index = elements[0].index;
+
+                if(index === 0){
+                    // sudh punya tasks
+                    window.location.href = "/manager/karyawans/?filter=with-task";
+                }else{
+                    // blm ada tasks
+                    window.location.href = "/manager/karyawans/?filter=no-task";
+                }
             }
         }
     });

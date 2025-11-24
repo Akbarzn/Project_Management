@@ -20,36 +20,36 @@
     </div>
 
 
-    @forelse ($projects as $p)
+    @forelse ($projects as $project)
         <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition">
 
             <div class="flex justify-between items-start">
                 <div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2">
                         <i class="fas fa-folder-open text-indigo-600"></i>
-                        {{ $p->project_name }}
+                        {{ $project->project_name }}
                     </h3>
 
                     <p class="text-gray-600 text-sm">
-                        Total Jam: <strong>{{ $p->total_hours }} jam</strong>
+                        Total Jam: <strong>{{ $project->total_hours }} jam</strong>
                     </p>
 
                     <p class="text-gray-600 text-sm">
                         Total Biaya:
-                        <strong>Rp {{ number_format($p->total_cost, 0, ',', '.') }}</strong>
+                        <strong>Rp {{ number_format($project->total_cost, 0, ',', '.') }}</strong>
                     </p>
 
                     <p class="text-gray-600 text-sm">
                         Status:
                         <span class="px-3 py-1 text-xs font-semibold rounded-full 
-                            {{ $p->status === 'complete' ? 'bg-green-100 text-green-800' :
-                               ($p->status === 'inwork' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700') }}">
-                            {{ ucfirst($p->status) }}
+                            {{ $project->status === 'complete' ? 'bg-green-100 text-green-800' :
+                               ($project->status === 'inwork' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700') }}">
+                            {{ ucfirst($project->status) }}
                         </span>
                     </p>
                 </div>
 
-                <a href="{{ route('manager.projects.show', $p->project_id) }}"
+                <a href="{{ route('manager.projects.show', $project->project_id) }}"
                     class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow transition">
                     <i class="fas fa-eye mr-1"></i> Detail
                 </a>

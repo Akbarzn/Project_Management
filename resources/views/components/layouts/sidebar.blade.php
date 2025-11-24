@@ -114,14 +114,5 @@
             </x-nav-link>
         @endrole
 
-
-
-        {{-- <a href="#"
-            class="flex items-center p-2 rounded-lg text-gray-700 hover:bg-indigo-50/70 hover:text-indigo-700 transition duration-150 ease-in-out">
-            <i class="fa-solid fa-user-tie mr-3 w-5 flex-shrink-0"></i>
-            <span x-show="sidebarOpen"
-                class="whitespace-nowrap transition-opacity duration-300 ease-in-out">Karyawan</span>
-        </a> --}}
-
     </nav>
 </aside>

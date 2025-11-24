@@ -97,7 +97,7 @@
 
     @else
 
-        {{-- EMPTY STATE (Tidak pakai SVG aneh) --}}
+        {{-- EMPTY STATE  --}}
         <div class="bg-white shadow-xl rounded-xl p-12 text-center border border-gray-200">
             <div class="flex justify-center mb-4">
                 <div class="h-20 w-20 bg-indigo-100 rounded-full flex items-center justify-center">

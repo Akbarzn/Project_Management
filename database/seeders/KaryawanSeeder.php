@@ -60,8 +60,11 @@ class KaryawanSeeder extends Seeder
         ];
 
         foreach ($employees as $employeeData) {
+          
+            // buat email otomatis dari nama
             $email = strtolower(str_replace(' ', '.', $employeeData['name'])) . '@company.com';
 
+            // buat user 
             $user = User::create([
                 'name' => $employeeData['name'],
                 'email' => $email,
@@ -69,6 +72,7 @@ class KaryawanSeeder extends Seeder
                 'potho_profile' => 'images/default.jpg'
             ]);
 
+            // buat data karyawan
             Karyawan::create(array_merge($employeeData, [
                 'user_id' => $user->id,
             ]));

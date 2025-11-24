@@ -19,7 +19,7 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     /**
-     * Service untuk logika user.
+     * simpan userservice ke property.
      */
     protected UserService $service;
 
@@ -77,7 +77,6 @@ class UserController extends Controller
 
     /**
      * Halaman edit user.
-     * Model binding langsung memberikan $user.
      */
     public function edit(User $user)
     {

@@ -7,22 +7,34 @@ use App\Models\Karyawan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class KaryawanService{
+class KaryawanService
+{
     protected KaryawanRepositoryInterface $repository;
 
-    public function __construct(KaryawanRepositoryInterface $repository){
+    public function __construct(KaryawanRepositoryInterface $repository)
+    {
         $this->repository = $repository;
     }
 
-    public function listKaryawan(?string $search = null){
-        return $this->repository->getAllKaryawan($search);
+    public function listKaryawan(?string $search = null, ?string $filter = null)
+    {
+        return $this->repository->getAllKaryawan($search, $filter);
     }
 
-    public function showKaryawan(int $id){
+    public function showKaryawan(int $id)
+    {
         return $this->repository->findById($id, ['user']);
     }
 
-      public function createKaryawan(array $data): Karyawan
+    /**
+     * Summary of createKaryawan
+     * buat karyawan baru
+     * buat user
+     * assign role karyawan
+     * @param array $data
+     * @return Karyawan
+     */
+    public function createKaryawan(array $data): Karyawan
     {
         return DB::transaction(function () use ($data) {
             // Buat user
@@ -48,67 +60,74 @@ class KaryawanService{
                 'cost' => $data['cost'],
             ]);
 
+            // kembalikan data lengkap dgn relasi user
             return $karyawan->load('user');
         });
     }
 
+
     /**
-     * Update data karyawan dan user
+     * Summary of updateKaryawan
+     * update data user dan karyawan
+     * @param Karyawan $karyawan
+     * @param array $data
+     * @return Karyawan
      */
     public function updateKaryawan(Karyawan $karyawan, array $data): Karyawan
     {
         return DB::transaction(function () use ($karyawan, $data) {
+
             $user = $karyawan->user;
 
-            // Update user
-            $userData = array_filter($data, fn($value, $key) =>
-                in_array($key, ['name', 'email', 'password']) && !empty($value),
-                ARRAY_FILTER_USE_BOTH
-            );
+            // update user
+            $user->name = $data['name'];
 
-            if (isset($userData['password'])) {
-                $userData['password'] = bcrypt($userData['password']);
+            if (!empty($data['email'])) {
+                $user->email = $data['email'];  // email update
             }
 
-            if (!empty($userData)) {
-                $user->update($userData);
+            if (!empty($data['password'])) {
+                $user->password = bcrypt($data['password']); // password update
             }
 
-            // Update karyawan
-            $karyawanData = array_filter($data, fn($value, $key) =>
-                in_array($key, ['name', 'nik', 'phone', 'job_title', 'cost', 'jabatan']) && !empty($value),
-                ARRAY_FILTER_USE_BOTH
-            );
+            $user->save();
 
-            if (!empty($karyawanData)) {
-                $this->repository->update($karyawan, $karyawanData);
-            }
-
-            // Pastikan role tetap 'karyawan'
-            if (method_exists($user, 'syncRoles')) {
-                $user->syncRoles('karyawan');
-            }
+            // update karyawan
+            $karyawan->update([
+                'name' => $data['name'],
+                'nik' => $data['nik'],
+                'phone' => $data['phone'],
+                'job_title' => $data['job_title'],
+                'jabatan' => $data['jabatan'],
+                'cost' => $data['cost'],
+            ]);
 
             return $karyawan->fresh(['user']);
         });
     }
 
-     public function deleteKaryawan(Karyawan $karyawan): bool
+
+    /**
+     * Summary of deleteKaryawan
+     * hapus data karyawan + user + task terkait
+     * @param Karyawan $karyawan
+     * @return bool
+     */
+    public function deleteKaryawan(Karyawan $karyawan): bool
     {
         return DB::transaction(function () use ($karyawan) {
-        // Pastikan user terkait ada
-        if ($karyawan->user) {
-            // Hapus user (jika punya)
-            $karyawan->user()->delete();
-        }
+            // cek apa ada user yg terkait
+            if ($karyawan->user) {
+                // jika ada hapus user 
+                $karyawan->user()->delete();
+            }
 
-        // Hapus semua relasi tambahan kalau ada (misal project, task)
-        if (method_exists($karyawan, 'tasks')) {
-            $karyawan->tasks()->delete();
-        }
+            // cek apa ada task yg terkait jika ada hapus
+            if (method_exists($karyawan, 'tasks')) {
+                $karyawan->tasks()->delete();
+            }
 
-        // Hapus data karyawan lewat repository
-        return $this->repository->delete($karyawan);
+            return $this->repository->delete($karyawan);
         });
     }
 }

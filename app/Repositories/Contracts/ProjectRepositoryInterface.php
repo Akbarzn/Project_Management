@@ -2,12 +2,18 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Repositories\Contracts\BaseRepositoryInterface;
 use App\Models\Project;
 
-interface ProjectRepositoryInterface{
+interface ProjectRepositoryInterface extends BaseRepositoryInterface{
     public function getAllWithFilter(?string $search = null);
+   
+    /**
+     * Summary of findWithRelations
+     * nampilin detail project
+     * tidak pake findById karena butuh relasi lengkap
+     * @param int $id
+     * @return Project
+     */
     public function findWithRelations(int $id): Project;
-    public function create(array $data);
-    public function update(Project $project, array $data);
-    public function delete(Project $project): bool;
 }

@@ -127,6 +127,17 @@
             </div>
 
         </form>
+        @if ($errors->any())
+    <div class="bg-red-100 border-l-4 border-red-600 text-red-700 p-3 my-3">
+        <strong>Error:</strong>
+        <ul class="mt-2 list-disc list-inside">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
     </div>
 </div>
 @endsection
