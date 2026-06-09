@@ -15,16 +15,20 @@ use Illuminate\Support\Carbon;
 class ProjectService
 {
     protected ProjectRepositoryInterface $repository;
+    protected WorkloadService $workloadService;
 
-    public function __construct(ProjectRepositoryInterface $repository)
-    {
+    public function __construct(
+        ProjectRepositoryInterface $repository,
+        WorkloadService $workloadService
+    ) {
         $this->repository = $repository;
+        $this->workloadService = $workloadService;
     }
 
     private function getRequiredJobTitle()
     {
         return [
-            'Analisis Proses Bisnis',
+            'Business Analyst',
             'Database Functional',
             'Programmer',
             'Quality Test',
@@ -48,12 +52,24 @@ class ProjectService
     public function getCreateData($requestId = null)
     {
         $request = $requestId ? ProjectRequest::findOrFail($requestId) : null;
+
+        // Ambil semua karyawan dan hitung workload info menggunakan WorkloadService
+        $karyawans = Karyawan::all(['id', 'name', 'job_title', 'cost', 'max_workload'])
+            ->map(function ($karyawan) {
+                $summary = $this->workloadService->getWorkloadSummary($karyawan);
+                $karyawan->workload_score = $summary['workload_score'];
+                $karyawan->is_overloaded = $summary['is_overloaded'];
+                return $karyawan;
+            })
+            ->sortBy('workload_score')
+            ->values();
+
         return [
             'projectRequest' => $request,
             'pending_request' => ProjectRequest::with('client')
                 ->where('status', 'pending')
                 ->get(['id', 'name_project', 'client_id']),
-            'karyawans' => Karyawan::all(['id', 'name', 'job_title', 'cost']),
+            'karyawans' => $karyawans,
             'requiredRoles' => $this->getRequiredJobTitle(),
         ];
     }
@@ -68,24 +84,33 @@ class ProjectService
     {
         $project->load(['client', 'projectRequest', 'karyawans']);
        
-        // Semua karyawan untuk dropdown
-        $all = Karyawan::all();
+        // Semua karyawan untuk dropdown, hitung workload dan urutkan
+        $all = Karyawan::all()
+            ->map(function ($karyawan) {
+                $summary = $this->workloadService->getWorkloadSummary($karyawan);
+                $karyawan->workload_score = $summary['workload_score'];
+                $karyawan->is_overloaded = $summary['is_overloaded'];
+                return $karyawan;
+            })
+            ->sortBy('workload_score')
+            ->values();
+
         $groupKaryawan = [];
         foreach($all as $karyawan){
             $groupKaryawan[$karyawan->job_title][] = $karyawan;
         }
-    // Mapping role → karyawan_id berdasarkan snapshot
-    $assigned = [];
 
-    foreach ($project->karyawans as $k) {
-        $role = $k->pivot->job_title_snapshot;
-        $assigned[$role] = $k->id;
-    }
+        // Mapping role → karyawan_id berdasarkan snapshot
+        $assigned = [];
+
+        foreach ($project->karyawans as $k) {
+            $role = $k->pivot->job_title_snapshot;
+            $assigned[$role] = $k->id;
+        }
 
         return [
             'project' => $project,
-            // 'karyawans' => Karyawan::all(['id', 'name', 'job_title', 'cost','job_title_snapshot']),
-            'assigned' =>$assigned,
+            'assigned' => $assigned,
             'groupKaryawan' => $groupKaryawan,
             'clients' => Client::all(['id', 'name']),
             'selectedKaryawanIds' => $project->karyawans->pluck('id')->toArray(),
@@ -120,26 +145,37 @@ class ProjectService
                 'total_cost' => 0,
             ]);
 
-            // simpanpivot snapshhot utk setiap karyawan
-            $syncData = [];
-            foreach ($data['karyawan_ids'] as $id) {
-                $karyawan = Karyawan::findOrFail($id);
-                $syncData[$id] = [
-                    'cost_snapshot' => $karyawan->cost,
-                    'job_title_snapshot' => $karyawan->job_title
-                ];
-            }
-            $project->karyawans()->attach($syncData);
+             // simpan pivot snapshot untuk setiap karyawan jika manual
+            if (($data['assignment_method'] ?? '') === 'manual' && isset($data['karyawan_ids'])) {
+                $requiredRoles = $this->getRequiredJobTitle();
 
-            // generate task untuk setiap karyawan
-            foreach ($data['karyawan_ids'] as $id) {
-                $karyawan = Karyawan::findOrFail($id);
-                $project->tasks()->create([
-                    'karyawan_id' => $id,
-                    'catatan' => '-',
-                    'status' => 'pending',
-                    'progress' => 0,
-                ]);
+                $syncData = [];
+                foreach ($data['karyawan_ids'] as $index => $id) {
+                    $karyawan = Karyawan::findOrFail($id);
+                    $role = $requiredRoles[$index] ?? $karyawan->job_title;
+
+                    $syncData[$id] = [
+                        'cost_snapshot'      => $karyawan->cost,
+                        'job_title_snapshot' => $karyawan->job_title,
+                        'role'               => $role,
+                        'assigned_by_system' => false,
+                        'task_weight'        => 0, // Dihapus karena tidak sesuai konsep Least Load
+                        'projected_workload' => 0, // Dihapus karena tidak sesuai konsep Least Load
+                        'fallback_used'      => false,
+                        'fallback_note'      => null,
+                    ];
+                }
+                $project->karyawans()->attach($syncData);
+
+                // generate task untuk setiap karyawan
+                foreach ($data['karyawan_ids'] as $id) {
+                    $project->tasks()->create([
+                        'karyawan_id' => $id,
+                        'catatan'     => '-',
+                        'status'      => 'pending',
+                        'progress'    => 0,
+                    ]);
+                }
             }
 
             // update status project request jadi approve
@@ -159,12 +195,12 @@ class ProjectService
      */
     public function showProject(int $id): array
     {
-        // ambil data projcet
+        // ambil data project
         $project = $this->repository->findById($id);
         $requiredRoles = $this->getRequiredJobTitle();
 
         // ambil data jobtitle
-        $jobTitleSnapshot = $project->karyawans->pluck('pivot.job_title_snapshot', 'id')->toArray(); //map id karyawan ke jobtitle snapshot
+        $jobTitleSnapshot = $project->karyawans->pluck('pivot.job_title_snapshot', 'id')->toArray();
 
         // sort berdasarkan jobtitle
         $sortedJobTitle = $project->tasks->sortBy(function ($task) use ($requiredRoles, $jobTitleSnapshot) {
@@ -186,35 +222,50 @@ class ProjectService
             $jobTitle = $jobTitleSnapshot[$task->karyawan_id] ?? $task->karyawan->job_title;
 
             return [
-                'karyawan' => $task->karyawan->name,
-                'job_title' => $jobTitle,
-                'catatan' => $task->catatan,
-                'status' => $task->status,
-                'progress' => $task->progress,
-                'hours' => $hours,
-                'days' => $days,
+                'karyawan'    => $task->karyawan->name,
+                'job_title'   => $jobTitle,
+                'catatan'     => $task->catatan,
+                'status'      => $task->status,
+                'progress'    => $task->progress,
+                'hours'       => $hours,
+                'days'        => $days,
                 'costPerHour' => $costPerHour,
-                'totalCost' => $totalCost,
+                'totalCost'   => $totalCost,
             ];
         });
 
         // hitung total progres dan biaya
         $totalProgress = round($project->tasks->avg('progress') ?? 0);
-        $grandTotal = $this->calculateTotalCost($project);
-        $durationDays = $this->getDurationDays($project);
+        $grandTotal    = $this->calculateTotalCost($project);
+        $durationDays  = $this->getDurationDays($project);
 
         // sync total cost ke database
         $this->updateTotalCost($project);
-        // $grandTotal = $project->tasks->sum(fn($t) => $t->workLogs->sum('hours') * $project->getKaryawanCost($t->karyawan_id));
 
+        // ─── Bangun data Tim Otomatis dari pivot karyawan_projects ───────────
+        // Hanya tampilkan karyawan yang di-assign by system (assigned_by_system = true)
+        $autoTeam = $project->karyawans
+            ->filter(fn($k) => $k->pivot->assigned_by_system)
+            ->map(function ($k) {
+                $summary = $this->workloadService->getWorkloadSummary($k);
+                return [
+                    'role'               => $k->pivot->role,
+                    'name'               => $k->name,
+                    'job_title'          => $k->job_title,
+                    'level'              => $k->level,
+                    'skills_text'        => $k->skills_text,
+                    'active_projects'    => $summary['active_projects'],
+                    'workload_status'    => $summary['workload_status'],
+                    'fallback_used'      => $k->pivot->fallback_used,
+                    'fallback_note'      => $k->pivot->fallback_note,
+                ];
+            })
+            ->sortBy('role')
+            ->values();
 
-        // if((float) $project->total_cost !== (float) $grandTotal){
-        //     $project->update(['total_cost' => $grandTotal]);
-        // }
-
-
-        return compact('project', 'tasks', 'totalProgress', 'grandTotal', 'durationDays');
+        return compact('project', 'tasks', 'totalProgress', 'grandTotal', 'durationDays', 'autoTeam');
     }
+
 
     /**
      * Summary of update

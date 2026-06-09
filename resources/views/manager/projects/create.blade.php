@@ -108,30 +108,50 @@
                             class="block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
 
+                    {{-- Metode Alokasi --}}
+                    <div>
+                        <label for="assignment_method" class="block text-sm font-semibold text-gray-700 mb-1">Metode Alokasi Tim</label>
+                        <select name="assignment_method" id="assignment_method" required
+                            class="block w-full rounded-lg border-gray-300 shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="otomatis" {{ old('assignment_method', 'otomatis') == 'otomatis' ? 'selected' : '' }}>Otomatis (Jalankan Auto Assignment)</option>
+                            <option value="manual" {{ old('assignment_method') == 'manual' ? 'selected' : '' }}>Manual (Pilih Karyawan Sendiri)</option>
+                        </select>
+                    </div>
+
                 </div>
 
                 {{--  Alokasi Karyawan --}}
-                <h3 class="text-xl font-bold text-gray-700 border-b pb-2 pt-4">Alokasi Tim Karyawan</h3>
-                <p class="text-sm text-gray-500 mb-4">Pilih karyawan yang sesuai untuk setiap peran yang dibutuhkan.</p>
+                <div id="manual-allocation-section" class="transition-all duration-300">
+                    <h3 class="text-xl font-bold text-gray-700 border-b pb-2 pt-4">Alokasi Tim Karyawan</h3>
+                    <p class="text-sm text-gray-500 mb-4">Pilih karyawan yang sesuai untuk setiap peran yang dibutuhkan.</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                    @foreach($requiredRoles as $index => $role)
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">{{ $role }}</label>
-                            <select name="karyawan_ids[]" required
-                                class="w-full rounded-lg border-gray-300 shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Pilih {{ $role }}</option>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                        @foreach($requiredRoles as $index => $role)
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">{{ $role }}</label>
+                                @php
+                                    $availableKaryawans = $karyawans->where('job_title', $role)->where('is_overloaded', false);
+                                @endphp
+                                <select name="karyawan_ids[]" id="select-role-{{ $index }}"
+                                    class="w-full rounded-lg border-gray-300 shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 select-karyawan">
+                                    <option value="">Pilih {{ $role }}</option>
 
-                                @foreach($karyawans->where('job_title', $role) as $karyawan)
-                                    <option value="{{ $karyawan->id }}" 
-                                        {{ old("karyawan_ids.$index") == $karyawan->id ? 'selected' : '' }}>
-                                        {{ $karyawan->name }}
-                                    </option>
-                                @endforeach
+                                    @foreach($availableKaryawans as $karyawan)
+                                        <option value="{{ $karyawan->id }}" 
+                                            {{ old("karyawan_ids.$index") == $karyawan->id ? 'selected' : '' }}>
+                                            {{ $karyawan->name }} — ({{ $karyawan->workload_score }} Project Ongoing)
+                                        </option>
+                                    @endforeach
 
-                            </select>
-                        </div>
-                    @endforeach
+                                </select>
+                                @if($availableKaryawans->isEmpty())
+                                    <p class="text-xs text-red-500 mt-1 font-semibold">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> Semua karyawan role ini overload/tidak tersedia.
+                                    </p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Submit --}}
@@ -147,4 +167,33 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const assignmentMethodSelect = document.getElementById('assignment_method');
+        const manualSection = document.getElementById('manual-allocation-section');
+        const selectFields = manualSection.querySelectorAll('.select-karyawan');
+
+        function toggleAllocationSection() {
+            if (assignmentMethodSelect.value === 'otomatis') {
+                manualSection.style.display = 'none';
+                selectFields.forEach(select => {
+                    select.removeAttribute('required');
+                    select.disabled = true;
+                });
+            } else {
+                manualSection.style.display = 'block';
+                selectFields.forEach(select => {
+                    select.setAttribute('required', 'required');
+                    select.disabled = false;
+                });
+            }
+        }
+
+        assignmentMethodSelect.addEventListener('change', toggleAllocationSection);
+        
+        // Initial run
+        toggleAllocationSection();
+    });
+</script>
 @endsection

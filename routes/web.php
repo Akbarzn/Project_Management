@@ -5,6 +5,7 @@ use App\Http\Controllers\{
     ProfileController,
     DashboardController,
     ProjectController,
+    ProjectAssignmentController,
     UserController,
     KaryawanController,
     ClientController,
@@ -56,15 +57,45 @@ Route::middleware(['auth', 'role:manager'])
         Route::resource('users', UserController::class);
         Route::resource('karyawans', KaryawanController::class);
         Route::resource('clients', ClientController::class);
-        Route::resource('projects', ProjectController::class);
 
-        // Project Approve
-        Route::get('projects/create/{requestId}', [ProjectController::class, 'create'])->name('projects.create.from.request');
+        // Project Routes — route spesifik harus SEBELUM resource agar tidak teroverride
+        Route::get('projects/create/{requestId}', [ProjectController::class, 'create'])
+            ->name('projects.create.from.request');
+
         Route::resource('projects', ProjectController::class);
 
         //  Project Request 
         Route::resource('tasks', TaskController::class);
         Route::resource('project-request', ProjectRequestController::class);
+
+        // ─── Auto Assignment (Workload Balancing) ───────────────────────────
+        //
+        // Endpoint untuk fitur otomatis pemilihan karyawan terbaik ke project.
+        //
+        // GET  suggest   → Preview rekomendasi karyawan + workload score (JSON)
+        // POST auto      → Sistem assign karyawan terbaik ke project
+        // POST manual    → Manager pilih karyawan, sistem validasi overload
+        // GET  workload  → Overview workload seluruh karyawan (monitoring)
+        //
+        Route::prefix('projects/{project}/assignment')
+            ->name('projects.assignment.')
+            ->group(function () {
+                // Lihat rekomendasi karyawan (tidak mengubah data)
+                Route::get('suggest', [ProjectAssignmentController::class, 'suggest'])
+                    ->name('suggest');
+
+                // Auto-assign: sistem pilih karyawan terbaik secara otomatis
+                Route::post('auto', [ProjectAssignmentController::class, 'autoAssign'])
+                    ->name('auto');
+
+                // Manual-assign: manager pilih, sistem validasi overload
+                Route::post('manual', [ProjectAssignmentController::class, 'manualAssign'])
+                    ->name('manual');
+
+                // Monitoring: lihat workload semua karyawan
+                Route::get('workload-overview', [ProjectAssignmentController::class, 'workloadOverview'])
+                    ->name('workload-overview');
+            });
 
         // API untuk ambil daftar karyawan berdasarkan task
         Route::get('/manager/karyawan-task-status/{type}', function ($type) {

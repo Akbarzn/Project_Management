@@ -20,6 +20,8 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-28">Tiket</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-48">Project Name</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Kategori</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Priority</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Difficulty</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-white w-32">Status</th>
 
                     {{-- Description kolom panjang pakai truncate --}}
@@ -48,6 +50,52 @@
                     {{-- Kategori --}}
                     <td class="px-4 py-2 text-sm text-gray-700">
                         {{ ucfirst($requestProject->kategori) }}
+                    </td>
+
+                    {{-- Priority Badge --}}
+                    <td class="px-4 py-2 text-sm">
+                        @php
+                            $priorityBadge = [
+                                1 => 'bg-gray-100 text-gray-800 border border-gray-200',
+                                2 => 'bg-blue-100 text-blue-800 border border-blue-200',
+                                3 => 'bg-orange-100 text-orange-800 border border-orange-200',
+                                4 => 'bg-red-100 text-red-800 border border-red-200',
+                            ][$requestProject->priority] ?? 'bg-gray-100 text-gray-800 border border-gray-200';
+
+                            $priorityLabel = [
+                                1 => 'Low',
+                                2 => 'Medium',
+                                3 => 'High',
+                                4 => 'Critical',
+                            ][$requestProject->priority] ?? '-';
+                        @endphp
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $priorityBadge }}">
+                            {{ $priorityLabel }}
+                        </span>
+                    </td>
+
+                    {{-- Difficulty Badge --}}
+                    <td class="px-4 py-2 text-sm">
+                        @php
+                            $diffBadge = [
+                                1 => 'bg-green-100 text-green-800 border border-green-200',
+                                2 => 'bg-blue-100 text-blue-800 border border-blue-200',
+                                3 => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                                4 => 'bg-red-100 text-red-800 border border-red-200',
+                                5 => 'bg-gray-800 text-gray-100 border border-gray-700',
+                            ][$requestProject->difficulty] ?? 'bg-gray-100 text-gray-800 border border-gray-200';
+
+                            $diffLabel = [
+                                1 => 'Sangat Mudah',
+                                2 => 'Mudah',
+                                3 => 'Sedang',
+                                4 => 'Sulit',
+                                5 => 'Sangat Sulit',
+                            ][$requestProject->difficulty] ?? '-';
+                        @endphp
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $diffBadge }}">
+                            {{ $diffLabel }}
+                        </span>
                     </td>
 
                     {{-- Status --}}

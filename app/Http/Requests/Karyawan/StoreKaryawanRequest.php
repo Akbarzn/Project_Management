@@ -34,15 +34,16 @@ class StoreKaryawanRequest extends FormRequest
          */
         
         return [
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-            'name' => 'required|max:50',
-            'nik' => 'nullable|unique:karyawans,nik|max:30', 
-            'jabatan' => 'string|max:50',
-            'phone' => 'required|nullable',
-            'job_title' =>'required',
-            'cost' => 'required|numeric'
-        
+            'email'        => 'required|email|unique:users,email',
+            'password'     => 'required|min:8',
+            'name'         => 'required|max:50',
+            'nik'          => 'nullable|unique:karyawans,nik|max:30',
+            'jabatan'      => 'string|max:50',
+            'phone'        => 'required|nullable',
+            'job_title'    => 'required',
+            'level'        => 'required|in:Junior,Intermediate,Senior,Lead',
+            'cost'         => 'required|numeric',
+            'skills'       => 'nullable|string',
         ];
     }
 
@@ -75,6 +76,9 @@ class StoreKaryawanRequest extends FormRequest
 
             'cost.required' => 'Cost wajib diisi.',
             'cost.numeric'  => 'Cost harus berupa angka.',
+
+            'level.required' => 'Level karyawan wajib dipilih.',
+            'level.in'       => 'Level harus salah satu: Junior, Intermediate, Senior, Lead.',
         ];
     }
 }

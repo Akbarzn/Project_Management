@@ -5,11 +5,11 @@
 @section('content')
 
 @php
-    // daftar job title
+    // daftar job title sesuai 5 role project (LeastLoadAssignmentService::ROLES)
     $requiredJobTitle = [
-        'Analisis Proses Bisnis',
-        'Database Functional',
+        'Business Analyst',
         'Programmer',
+        'Database Functional',
         'Quality Test',
         'SysAdmin',
     ];
@@ -98,13 +98,13 @@
                     </div>
                 </div>
                 
-                {{-- Job Title & Cost --}}
+                {{-- Job Title & Level --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {{-- Job Title (Diubah menjadi SELECT) --}}
+                    {{-- Job Title --}}
                     <div>
-                        <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title </label>
-                        <select name="job_title" id="job_title" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror" 
+                        <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title / Role</label>
+                        <select name="job_title" id="job_title"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('job_title') border-red-500 @enderror"
                             required>
                             <option value="" disabled {{ old('job_title') == null ? 'selected' : '' }}>Pilih Job Title</option>
                             @foreach($requiredJobTitle as $jobTitle)
@@ -113,24 +113,61 @@
                                 </option>
                             @endforeach
                         </select>
+                        @error('job_title')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    {{-- Biaya --}}
+                    {{-- Level --}}
                     <div>
-                        <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1">Biaya / Jam (Rp)</label>
-                        <input type="number" step="0.01" name="cost" id="cost" value="{{ old('cost') }}" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror" 
-                            required 
-                            />
+                        <label for="level" class="block text-sm font-semibold text-gray-700 mb-1">Level Karyawan</label>
+                        <select name="level" id="level"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('level') border-red-500 @enderror"
+                            required>
+                            <option value="" disabled {{ old('level') == null ? 'selected' : '' }}>Pilih Level</option>
+                            @foreach(\App\Models\Karyawan::LEVELS as $lvl)
+                                <option value="{{ $lvl }}" {{ old('level') == $lvl ? 'selected' : '' }}>
+                                    {{ $lvl }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('level')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
+                </div>
+
+                {{-- Biaya --}}
+                <div>
+                    <label for="cost" class="block text-sm font-semibold text-gray-700 mb-1">Biaya / Jam (Rp)</label>
+                    <input type="number" step="0.01" name="cost" id="cost" value="{{ old('cost') }}"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
+                        required />
+                    @error('cost')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
                     <label for="jabatan" class="block text-sm font-semibold text-gray-700 mb-1">Jabatan</label>
                     <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan') }}"
-                        class="2-full border border-gray-300 rounded-lg px-8 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('jabatan') border-red-500 @enderror"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('jabatan') border-red-500 @enderror"
                         required
                     />
+                    @error('jabatan')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Skills --}}
+                <div>
+                    <label for="skills" class="block text-sm font-semibold text-gray-700 mb-1">Skills (pisahkan dengan koma)</label>
+                    <input type="text" name="skills" id="skills" value="{{ old('skills') }}" 
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('skills') border-red-500 @enderror" 
+                        placeholder="Laravel,PHP,Docker" />
+                    @error('skills')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="pt-6 flex justify-between items-center">

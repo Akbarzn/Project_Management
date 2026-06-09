@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
+@section('title', 'Detail Project Request')
+
 @section('content')
 <div class="max-w-4xl mx-auto p-6">
-    
+
     {{-- Header --}}
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -51,7 +53,7 @@
             {{-- Kategori --}}
             <div>
                 <p class="text-sm text-gray-500 font-medium mb-1">Kategori</p>
-                <span class="px-3 py-1 text-sm font-semibold rounded-full 
+                <span class="px-3 py-1 text-sm font-semibold rounded-full
                     {{ $projectRequest->kategori === 'New Aplikasi'
                         ? 'bg-blue-100 text-blue-700'
                         : 'bg-yellow-100 text-yellow-700' }}">
@@ -59,11 +61,62 @@
                 </span>
             </div>
 
+            {{-- ═══════════════════════════════════════════════════════════════ --}}
+            {{-- Auto Assignment Parameters                                     --}}
+            {{-- ═══════════════════════════════════════════════════════════════ --}}
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+                <h4 class="text-sm font-bold text-indigo-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-robot text-indigo-600"></i>
+                    Parameter Auto Assignment
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    {{-- Priority --}}
+                    <div class="bg-white rounded-lg p-4 border border-indigo-100">
+                        <p class="text-xs text-gray-500 font-medium mb-1">Priority</p>
+                        @php
+                            $priorityBadge = [
+                                1 => 'bg-gray-100 text-gray-800',
+                                2 => 'bg-blue-100 text-blue-800',
+                                3 => 'bg-yellow-100 text-yellow-800',
+                                4 => 'bg-orange-100 text-orange-800',
+                                5 => 'bg-red-100 text-red-800',
+                            ][$projectRequest->priority] ?? 'bg-gray-100 text-gray-800';
+
+                            $priorityLabel = \App\Models\ProjectRequest::PRIORITY_LABELS[$projectRequest->priority] ?? '-';
+                        @endphp
+                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full {{ $priorityBadge }}">
+                            {{ $projectRequest->priority }} — {{ $priorityLabel }}
+                        </span>
+                    </div>
+
+                    {{-- Difficulty --}}
+                    <div class="bg-white rounded-lg p-4 border border-indigo-100">
+                        <p class="text-xs text-gray-500 font-medium mb-1">Difficulty</p>
+                        <p class="font-bold text-gray-800">
+                            {{ $projectRequest->difficulty }} — {{ \App\Models\ProjectRequest::DIFFICULTY_LABELS[$projectRequest->difficulty] ?? '-' }}
+                        </p>
+                    </div>
+
+                    {{-- Estimated Duration --}}
+                    <div class="bg-white rounded-lg p-4 border border-indigo-100">
+                        <p class="text-xs text-gray-500 font-medium mb-1">Estimasi Durasi</p>
+                        <p class="font-bold text-gray-800">
+                            {{ $projectRequest->estimated_duration ? $projectRequest->estimated_duration . ' Jam' : '-' }}
+                        </p>
+                    </div>
+
+                </div>
+
+
+            </div>
+
             {{-- Status --}}
             @php
                 $badge = [
-                    'pending' => 'bg-yellow-100 text-yellow-800',
-                    'approve' => 'bg-green-100 text-green-800',
+                    'pending'  => 'bg-yellow-100 text-yellow-800',
+                    'approve'  => 'bg-green-100 text-green-800',
                     'rejected' => 'bg-red-100 text-red-800'
                 ][$projectRequest->status] ?? 'bg-gray-100 text-gray-800';
             @endphp
@@ -88,11 +141,25 @@
             @if($projectRequest->document)
                 <div>
                     <p class="text-sm text-gray-500 font-medium mb-1">Dokumen Pendukung</p>
-                    <a href="{{ asset('storage/' . $projectRequest->document) }}" 
+                    <a href="{{ asset('storage/' . $projectRequest->document) }}"
                        target="_blank"
                        class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white shadow transition">
                         <i class="fas fa-file-download mr-2"></i> Lihat Dokumen
                     </a>
+                </div>
+            @endif
+
+            {{-- Approve Button --}}
+            @if($projectRequest->status === 'pending')
+                <div class="pt-2 border-t border-gray-200">
+                    <a href="{{ route('manager.projects.create.from.request', ['requestId' => $projectRequest->id]) }}"
+                        class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow font-semibold transition">
+                        <i class="fas fa-robot mr-2"></i>
+                        Approve & Jalankan Auto Assignment
+                    </a>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Sistem akan otomatis membentuk tim 5 role berdasarkan Least Load algorithm.
+                    </p>
                 </div>
             @endif
 

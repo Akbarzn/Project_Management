@@ -3,7 +3,7 @@
 
 @section('content')
 
-    <div class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+    <div class="max-w-7xl mx-auto px-6 py-10 space-y-8">
 
         {{-- HEADER --}}
         <div class="flex justify-between items-center">
@@ -31,131 +31,186 @@
             </div>
         @endif
 
-
         {{-- TABLE --}}
         @if ($data->count() > 0)
 
             <div class="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden">
 
-                <table class="min-w-full text-sm">
-                    <thead class="bg-indigo-600 text-white uppercase text-xs tracking-wider">
-                        <tr>
-                            <th class="px-4 py-3 text-center w-12">No</th>
-                            <th class="px-4 py-3 text-center">Tiket</th>
-                            <th class="px-4 py-3 text-left">Nama Project</th>
-                            <th class="px-4 py-3 text-left">Client</th>
-                            <th class="px-4 py-3 text-center">Kategori</th>
-                            <th class="px-4 py-3 text-center">Status</th>
-                            <th class="px-4 py-3 text-center">Document</th>
-                            <th class="px-4 py-3 text-center w-40">Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y divide-gray-200">
-
-                        @foreach ($data as $req)
-                            <tr class="hover:bg-gray-50 transition">
-
-                                {{-- No --}}
-                                <td class="px-4 py-3 text-center">
-                                    {{ $data->firstItem() + $loop->index }}
-                                </td>
-
-                                {{-- Tiket --}}
-                                <td class="px-4 py-3 text-center font-mono text-gray-800">
-                                    {{ $req->tiket }}
-                                </td>
-
-                                {{-- Nama Project --}}
-                                <td class="px-4 py-3 font-semibold text-gray-900">
-                                    {{ $req->name_project }}
-                                </td>
-
-                                {{-- Client --}}
-                                <td class="px-4 py-3 text-gray-700">
-                                    {{ $req->client->name ?? '-' }}
-                                </td>
-
-                                {{-- Kategori --}}
-                                <td class="px-4 py-3 text-center text-gray-700">
-                                    {{ $req->kategori }}
-                                </td>
-
-                                {{-- Status --}}
-                                <td class="px-4 py-3 text-center">
-                                    @php
-                                        $badge =
-                                            [
-                                                'pending' => 'bg-yellow-100 text-yellow-800',
-                                                'approve' => 'bg-green-100 text-green-800',
-                                                'rejected' => 'bg-red-100 text-red-800',
-                                            ][$req->status] ?? 'bg-gray-100 text-gray-800';
-                                    @endphp
-
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $badge }}">
-                                        {{ ucfirst($req->status) }}
-                                    </span>
-                                </td>
-
-                                {{-- Dokumen --}}
-                                <td class="px-4 py-3 text-center">
-                                    @if ($req->document)
-                                        <a href="{{ asset('storage/' . $req->document) }}" target="_blank"
-                                            class="text-indigo-600 hover:underline font-medium">
-                                            Lihat
-                                        </a>
-                                    @else
-                                        <span class="text-gray-500">-</span>
-                                    @endif
-                                </td>
-
-
-                                {{-- Aksi --}}
-                                <td class="px-4 py-3">
-                                    <div class="flex justify-center items-center gap-2">
-
-                                        {{-- DETAIL --}}
-                                        <a href="{{ route('manager.project-request.show', $req->id) }}"
-                                            class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
-                                            <i class="fas fa-eye mr-1"></i> Detail
-                                        </a>
-
-                                        {{-- EDIT --}}
-                                        <a href="{{ route('manager.project-request.edit', $req->id) }}"
-                                            class="inline-flex items-center bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
-                                            <i class="fas fa-edit mr-1"></i> Edit
-                                        </a>
-
-                                        {{-- DELETE --}}
-                                        <form action="{{ route('manager.project-request.destroy', $req->id) }}"
-                                            method="POST" onsubmit="return confirm('Yakin ingin menghapus request ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow transition">
-                                                <i class="fas fa-trash-alt mr-1"></i> Hapus
-                                            </button>
-                                        </form>
-
-                                    </div>
-
-                                    {{-- APPROVE --}}
-                                    @if ($req->status === 'pending')
-                                        <a href="{{ route('manager.projects.create.from.request', ['requestId' => $req->id]) }}"
-                                            class="mt-2 block bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-xs font-semibold text-center shadow transition">
-                                            <i class="fas fa-check-circle mr-1"></i> Approve
-                                        </a>
-                                    @endif
-
-                                </td>
-
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-indigo-600 text-white uppercase text-xs tracking-wider">
+                            <tr>
+                                <th class="px-4 py-3 text-center w-10">No</th>
+                                <th class="px-4 py-3 text-center">Tiket</th>
+                                <th class="px-4 py-3 text-left">Nama Project</th>
+                                <th class="px-4 py-3 text-left">Client</th>
+                                <th class="px-4 py-3 text-center">Kategori</th>
+                                {{-- Kolom baru --}}
+                                <th class="px-4 py-3 text-center">Priority</th>
+                                <th class="px-4 py-3 text-center">Difficulty</th>
+                                <th class="px-4 py-3 text-center">Status</th>
+                                <th class="px-4 py-3 text-center">Dokumen</th>
+                                <th class="px-4 py-3 text-center w-32">Aksi</th>
                             </tr>
-                        @endforeach
+                        </thead>
 
-                    </tbody>
+                        <tbody class="divide-y divide-gray-200">
 
-                </table>
+                            @foreach ($data as $req)
+                                <tr class="hover:bg-gray-50 transition">
 
+                                    {{-- No --}}
+                                    <td class="px-4 py-3 text-center text-gray-600">
+                                        {{ $data->firstItem() + $loop->index }}
+                                    </td>
+
+                                    {{-- Tiket --}}
+                                    <td class="px-4 py-3 text-center font-mono text-gray-800">
+                                        {{ $req->tiket }}
+                                    </td>
+
+                                    {{-- Nama Project --}}
+                                    <td class="px-4 py-3 font-semibold text-gray-900">
+                                        {{ $req->name_project }}
+                                    </td>
+
+                                    {{-- Client --}}
+                                    <td class="px-4 py-3 text-gray-700">
+                                        {{ $req->client->name ?? '-' }}
+                                    </td>
+
+                                    {{-- Kategori --}}
+                                    <td class="px-4 py-3 text-center text-gray-700">
+                                        {{ $req->kategori }}
+                                    </td>
+
+                                    {{-- Priority Badge --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @php
+                                            $priorityBadge = [
+                                                1 => 'bg-gray-100 text-gray-800 border border-gray-200',
+                                                2 => 'bg-blue-100 text-blue-800 border border-blue-200',
+                                                3 => 'bg-orange-100 text-orange-800 border border-orange-200',
+                                                4 => 'bg-red-100 text-red-800 border border-red-200',
+                                            ][$req->priority] ?? 'bg-gray-100 text-gray-800 border border-gray-200';
+
+                                            $priorityLabel = [
+                                                1 => 'Low',
+                                                2 => 'Medium',
+                                                3 => 'High',
+                                                4 => 'Critical',
+                                            ][$req->priority] ?? '-';
+                                        @endphp
+                                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full {{ $priorityBadge }}">
+                                            {{ $priorityLabel }}
+                                        </span>
+                                    </td>
+
+                                    {{-- Difficulty --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @php
+                                            $diffBadge = [
+                                                1 => 'bg-green-100 text-green-800 border border-green-200',
+                                                2 => 'bg-blue-100 text-blue-800 border border-blue-200',
+                                                3 => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                                                4 => 'bg-red-100 text-red-800 border border-red-200',
+                                                5 => 'bg-gray-800 text-gray-100 border border-gray-700',
+                                            ][$req->difficulty] ?? 'bg-gray-100 text-gray-800 border border-gray-200';
+
+                                            $diffLabel = [
+                                                1 => 'Sangat Mudah',
+                                                2 => 'Mudah',
+                                                3 => 'Sedang',
+                                                4 => 'Sulit',
+                                                5 => 'Sangat Sulit',
+                                            ][$req->difficulty] ?? '-';
+                                        @endphp
+                                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full {{ $diffBadge }}">
+                                            {{ $diffLabel }}
+                                        </span>
+                                    </td>
+
+
+                                    {{-- Status --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @php
+                                            $badge =
+                                                [
+                                                    'pending'  => 'bg-yellow-100 text-yellow-800',
+                                                    'approve'  => 'bg-green-100 text-green-800',
+                                                    'rejected' => 'bg-red-100 text-red-800',
+                                                ][$req->status] ?? 'bg-gray-100 text-gray-800';
+                                        @endphp
+
+                                        <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $badge }}">
+                                            {{ ucfirst($req->status) }}
+                                        </span>
+                                    </td>
+
+                                    {{-- Dokumen --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @if ($req->document)
+                                            <a href="{{ asset('storage/' . $req->document) }}" target="_blank"
+                                                class="text-indigo-600 hover:underline font-medium text-xs">
+                                                Lihat
+                                            </a>
+                                        @else
+                                            <span class="text-gray-400 text-xs">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- Aksi --}}
+                                  {{-- AKSI --}}
+<td class="px-4 py-3">
+    <div class="flex justify-center items-center gap-2">
+
+        {{-- DETAIL --}}
+        <a href="{{ route('manager.project-request.show', $req->id) }}"
+            title="Detail"
+            class="w-9 h-9 rounded-lg bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center shadow transition">
+            <i class="fas fa-eye"></i>
+        </a>
+
+        {{-- EDIT --}}
+        <a href="{{ route('manager.project-request.edit', $req->id) }}"
+            title="Edit"
+            class="w-9 h-9 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white flex items-center justify-center shadow transition">
+            <i class="fas fa-edit"></i>
+        </a>
+
+        {{-- DELETE --}}
+        <form action="{{ route('manager.project-request.destroy', $req->id) }}"
+            method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus request ini?');">
+            @csrf
+            @method('DELETE')
+
+            <button type="submit"
+                title="Hapus"
+                class="w-9 h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow transition">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+
+        {{-- APPROVE --}}
+        @if ($req->status === 'pending')
+            <a href="{{ route('manager.projects.create.from.request', ['requestId' => $req->id]) }}"
+                title="Approve & Auto Assign"
+                class="w-9 h-9 rounded-lg bg-green-600 hover:bg-green-700 text-white flex items-center justify-center shadow transition">
+                <i class="fas fa-check"></i>
+            </a>
+        @endif
+
+    </div>
+</td>
+
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
+                </div>
             </div>
 
             {{-- PAGINATION --}}

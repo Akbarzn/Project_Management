@@ -88,7 +88,7 @@ class DashboardRepository extends BaseRepository implements DashboardRepositoryI
                 $totalProgress = round($tasks->avg('progress') ?? 0,0);
 
                 return [
-                    'nama_project' => $project->projectRequest->name_project ?? 'Tanpa Nama',
+                    'nama_project' => $project->projectRequest?->name_project ?? 'Tanpa Nama',
                     'total_project_progress' => $totalProgress,
                     'total_cost' => $project->total_cost ?? 0,
                     'roles' => $roles,
@@ -124,7 +124,7 @@ class DashboardRepository extends BaseRepository implements DashboardRepositoryI
 
         return (object) [
             'project_id'   => $project->id,
-            'project_name' => $project->projectRequest->name_project ?? 'Tanpa Nama',
+            'project_name' => $project->projectRequest?->name_project ?? 'Tanpa Nama',
             'status'       => $tasksByProject->last()->status,
             'total_hours'  => $totalHours,
             'total_cost'   => $totalHours * $karyawan->cost,
@@ -155,7 +155,7 @@ class DashboardRepository extends BaseRepository implements DashboardRepositoryI
             })->values();
 
             return [
-                'name_project' => $project->projectRequest->name_project ??'-',
+                'name_project' => $project->projectRequest?->name_project ?? '-',
                 'total_cost' => $project->total_cost ?? 0,
                 'total_progress' => round($tasks->avg('progress') ?? 0),
                 'jobTitle' => $jobTitle

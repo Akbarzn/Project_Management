@@ -28,7 +28,7 @@
                 <option value="">Semua Proyek</option>
                 @foreach ($projects as $project)
                     <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                        {{ $project->projectRequest->name_project }}
+                        {{ $project->projectRequest?->name_project ?? 'Project #' . $project->id }}
                     </option>
                 @endforeach
             </select>
@@ -93,7 +93,7 @@
                             </td>
 
                             <td class="px-4 py-3 text-gray-700">
-                                {{ $task->project->projectRequest->name_project ?? '-' }}
+                                {{ $task->project->projectRequest?->name_project ?? 'Project #' . $task->project_id }}
                             </td>
 
                             {{--  STATUS --}}

@@ -49,7 +49,7 @@
             <div class="mb-4">
                 <label class="font-semibold text-gray-700">Nama Project:</label>
                 <input type="text" name="name_project"
-                    value="{{ old('name_project', $project->projectRequest->name_project) }}"
+                    value="{{ old('name_project', $project->projectRequest?->name_project) }}"
                     class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1">
             </div>
 
@@ -71,7 +71,7 @@
             <div class="mb-4">
                 <label class="font-semibold text-gray-700">Deskripsi:</label>
                 <textarea name="description" rows="4"
-                    class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1">{{ old('description', $project->projectRequest->description) }}</textarea>
+                    class="w-full border-gray-300 rounded-lg px-3 py-2 mt-1">{{ old('description', $project->projectRequest?->description) }}</textarea>
             </div>
         </div>
 
@@ -122,8 +122,10 @@
 
                         @foreach ($groupKaryawan[$jobTitle] ?? [] as $karyawan)
                             <option value="{{ $karyawan->id }}"
-                                {{ isset($assigned[$jobTitle]) && $assigned[$jobTitle] == $karyawan->id ? 'selected' : '' }}>
-                                {{ $karyawan->name }}
+                                {{ isset($assigned[$jobTitle]) && $assigned[$jobTitle] == $karyawan->id ? 'selected' : '' }}
+                                @if($karyawan->is_overloaded && (!isset($assigned[$jobTitle]) || $assigned[$jobTitle] != $karyawan->id)) disabled style="color: #ef4444; font-weight: 500;" @endif>
+                                {{ $karyawan->name }} — ({{ $karyawan->workload_score }} Project Ongoing)
+                                @if($karyawan->is_overloaded && (!isset($assigned[$jobTitle]) || $assigned[$jobTitle] != $karyawan->id)) — [OVERLOADED] @endif
                             </option>
                         @endforeach
 

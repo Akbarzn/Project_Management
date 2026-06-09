@@ -26,11 +26,11 @@
                 <option value="">Pilih Jabatan</option>
                 @php
                 $jobTitles = [
-                    'Analisis Proses Bisnis',
+                    'Business Analyst',
                     'Database Functional',
                     'Programmer',
                     'Quality Test',
-                    'SysAdmin'
+                    'SysAdmin',
                 ]
                 @endphp
                 @foreach ($jobTitles as $title )

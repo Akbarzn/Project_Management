@@ -24,7 +24,7 @@
 
             <p class="text-sm">
                 <strong>Nama Project:</strong> 
-                {{ $task->project->projectRequest->name_project ?? '-' }}
+                {{ $task->project->projectRequest?->name_project ?? '-' }}
             </p>
 
             <p class="text-sm">

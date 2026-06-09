@@ -58,7 +58,7 @@
         <option value="">-- Pilih Project --</option>
         @foreach ($projects as $project )
             <option value="{{ $project->id }}">
-                {{ $project->projectRequest->name_project }}
+                {{ $project->projectRequest?->name_project ?? 'Project #' . $project->id }}
             </option>
         @endforeach
     </select>

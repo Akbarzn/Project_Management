@@ -33,7 +33,10 @@ class ProfileController extends Controller
         
         // Update data user
         $user->name = $validated['name'];
-        $user->email = $validated['email'];
+        if ($user->email !== $validated['email']) {
+            $user->email = $validated['email'];
+            $user->email_verified_at = null;
+        }
 
         // update password jika user isi password baru
         if (!empty($validated['password'])) {

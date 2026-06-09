@@ -49,15 +49,24 @@ class KaryawanService
                 $user->assignRole('karyawan');
             }
 
+            // Process skills from comma-separated string to array
+            $skills = null;
+            if (!empty($data['skills'])) {
+                $skills = array_values(array_filter(array_map('trim', explode(',', $data['skills'])), fn($val) => $val !== ''));
+            }
+
             // Buat karyawan
             $karyawan = $this->repository->create([
-                'user_id' => $user->id,
-                'name' => $user->name,
-                'nik' => $data['nik'],
-                'jabatan' => $data['jabatan'],
-                'phone' => $data['phone'],
-                'job_title' => $data['job_title'],
-                'cost' => $data['cost'],
+                'user_id'      => $user->id,
+                'name'         => $user->name,
+                'nik'          => $data['nik'],
+                'jabatan'      => $data['jabatan'],
+                'phone'        => $data['phone'],
+                'job_title'    => $data['job_title'],
+                'level'        => $data['level'] ?? 'Junior',
+                'cost'         => $data['cost'],
+                'skills'       => $skills,
+                'max_workload' => $data['max_workload'] ?? 40,
             ]);
 
             // kembalikan data lengkap dgn relasi user
@@ -92,15 +101,39 @@ class KaryawanService
 
             $user->save();
 
-            // update karyawan
-            $karyawan->update([
+            // Process skills from comma-separated string to array
+            $skills = null;
+            if (array_key_exists('skills', $data)) {
+                if (!empty($data['skills'])) {
+                    $skills = array_values(array_filter(array_map('trim', explode(',', $data['skills'])), fn($val) => $val !== ''));
+                }
+            } else {
+                $skills = $karyawan->skills;
+            }
+
+            $updateData = [
                 'name' => $data['name'],
                 'nik' => $data['nik'],
                 'phone' => $data['phone'],
                 'job_title' => $data['job_title'],
                 'jabatan' => $data['jabatan'],
                 'cost' => $data['cost'],
-            ]);
+            ];
+
+            if (array_key_exists('skills', $data)) {
+                $updateData['skills'] = $skills;
+            }
+
+            if (array_key_exists('max_workload', $data)) {
+                $updateData['max_workload'] = $data['max_workload'];
+            }
+
+            if (array_key_exists('level', $data)) {
+                $updateData['level'] = $data['level'];
+            }
+
+            // update karyawan
+            $karyawan->update($updateData);
 
             return $karyawan->fresh(['user']);
         });

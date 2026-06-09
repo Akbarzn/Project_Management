@@ -26,16 +26,18 @@ class UpdateKaryawanRequest extends FormRequest
 
         return [
             // field karyawan
-            'name' => 'sometimes|max:50',
-            'nik' => 'sometimes|max:30|unique:karyawans,nik,' . $karyawanId,
-            'phone' => 'sometimes',
-            'job_title' => 'sometimes',
-            'cost' => 'sometimes|numeric',
-            'jabatan' => 'sometimes',
+            'name'         => 'sometimes|max:50',
+            'nik'          => 'sometimes|max:30|unique:karyawans,nik,' . $karyawanId,
+            'phone'        => 'sometimes',
+            'job_title'    => 'sometimes',
+            'level'        => 'sometimes|in:Junior,Intermediate,Senior,Lead',
+            'cost'         => 'sometimes|numeric',
+            'jabatan'      => 'sometimes',
+            'skills'       => 'nullable|string',
 
             // field user
-            'email' => 'nullable|email|unique:users,email,' . $this->karyawan->user_id,
-            'password' => 'nullable|min:6|confirmed'
+            'email'    => 'nullable|email|unique:users,email,' . $this->karyawan->user_id,
+            'password' => 'nullable|min:6|confirmed',
         ];
     }
 
@@ -63,6 +65,8 @@ class UpdateKaryawanRequest extends FormRequest
             'jabatan.max' => 'Jabatan maksimal 50 karakter.',
 
             'job_title.max' => 'Job title maksimal 50 karakter.',
+
+            'level.in' => 'Level harus salah satu: Junior, Intermediate, Senior, Lead.',
 
             'cost.numeric' => 'Cost harus berupa angka.',
         ];

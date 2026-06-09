@@ -54,7 +54,7 @@
 
                                 {{-- NAMA PROJECT --}}
                                 <td class="px-4 py-3 font-semibold text-gray-800">
-                                    {{ $project->projectRequest->name_project ?? '-' }}
+                                    {{ $project->projectRequest?->name_project ?? '-' }}
                                 </td>
 
                                 {{-- CLIENT --}}

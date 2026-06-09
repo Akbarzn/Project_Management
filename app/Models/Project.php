@@ -21,6 +21,9 @@ class Project extends Model
         'approved_by',
         'is_approved',
         'total_cost',
+        'difficulty',       // Tingkat kesulitan project: 1 (mudah) - 5 (sangat sulit)
+        'estimated_hours',  // Estimasi total jam pengerjaan
+        'required_skill',   // Skill utama yang dibutuhkan untuk auto-assignment
     ];
 
     /**
@@ -68,15 +71,24 @@ class Project extends Model
     /**
      * Summary of karyawans
      * relasi many to many
-     * karyawan dgn project
+     * karyawan dgn project — sertakan semua kolom pivot baru untuk auto assignment
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Karyawan, Project, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function karyawans()
-{
-    return $this->belongsToMany(Karyawan::class, 'karyawan_projects','project_id','karyawan_id')
-    ->withPivot('cost_snapshot', 'job_title_snapshot')
-    ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(Karyawan::class, 'karyawan_projects', 'project_id', 'karyawan_id')
+            ->withPivot([
+                'cost_snapshot',
+                'job_title_snapshot',
+                'role',
+                'assigned_by_system',
+                'task_weight',
+                'projected_workload',
+                'fallback_used',
+                'fallback_note',
+            ])
+            ->withTimestamps();
+    }
 
 /**
  * Summary of tasks

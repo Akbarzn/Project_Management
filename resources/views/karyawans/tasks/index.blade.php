@@ -40,7 +40,7 @@
 
                         {{-- Project --}}
                         <td class="px-4 py-3 font-semibold text-gray-800">
-                            {{ $task->project->projectRequest->name_project ?? '-' }}
+                            {{ $task->project->projectRequest?->name_project ?? '-' }}
                         </td>
 
                         {{-- Client --}}

@@ -105,13 +105,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Job Title  --}}
                         <div>
-                            <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title /
-                                Tipe</label>
+                            <label for="job_title" class="block text-sm font-semibold text-gray-700 mb-1">Job Title / Role</label>
                             @php
                                 $jobTitles = [
-                                    'Analisis Proses Bisnis',
-                                    'Database Functional',
+                                    'Business Analyst',
                                     'Programmer',
+                                    'Database Functional',
                                     'Quality Test',
                                     'SysAdmin',
                                 ];
@@ -132,6 +131,26 @@
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        {{-- Level --}}
+                        <div>
+                            <label for="level" class="block text-sm font-semibold text-gray-700 mb-1">Level Karyawan</label>
+                            <select name="level" id="level"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('level') border-red-500 @enderror"
+                                required>
+                                <option value="">-- Pilih Level --</option>
+                                @foreach (\App\Models\Karyawan::LEVELS as $lvl)
+                                    <option value="{{ $lvl }}"
+                                        {{ old('level', $karyawan->level) == $lvl ? 'selected' : '' }}>
+                                        {{ $lvl }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('level')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
 
                         {{-- Jabatan  --}}
                         <div>
@@ -154,6 +173,17 @@
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('cost') border-red-500 @enderror"
                                 placeholder="Contoh: 500000" required />
                             @error('cost')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Skills --}}
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="skills" class="block text-sm font-semibold text-gray-700 mb-1">Skills (pisahkan dengan koma)</label>
+                            <input type="text" name="skills" id="skills" value="{{ old('skills', $karyawan->skills_text) }}"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('skills') border-red-500 @enderror"
+                                placeholder="Laravel,PHP,Docker" />
+                            @error('skills')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>

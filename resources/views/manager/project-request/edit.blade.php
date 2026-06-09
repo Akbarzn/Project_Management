@@ -20,6 +20,18 @@
     {{-- CARD --}}
     <div class="bg-white border border-gray-200 p-6 rounded-b-xl shadow-xl">
 
+        {{-- VALIDATION ERRORS --}}
+        @if ($errors->any())
+            <div class="mb-5 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm">
+                <p class="font-bold">⚠️ Gagal menyimpan. Silakan periksa:</p>
+                <ul class="mt-2 list-disc list-inside text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- FORM --}}
         <form action="{{ route('manager.project-request.update', $projectRequest->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
@@ -70,7 +82,10 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Project</label>
                 <input type="text" name="name_project" value="{{ old('name_project', $projectRequest->name_project) }}"
                        required
-                       class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500">
+                       class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('name_project') border-red-500 @enderror">
+                @error('name_project')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- KATEGORI --}}
@@ -97,7 +112,75 @@
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Deskripsi</label>
                 <textarea name="description" rows="4" required
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500">{{ old('description', $projectRequest->description) }}</textarea>
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('description') border-red-500 @enderror">{{ old('description', $projectRequest->description) }}</textarea>
+                @error('description')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════ --}}
+            {{-- SECTION: Auto Assignment Parameters                            --}}
+            {{-- ═══════════════════════════════════════════════════════════════ --}}
+            <div class="p-5 bg-indigo-50 border border-indigo-200 rounded-xl">
+                <h3 class="text-base font-bold text-indigo-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-robot text-indigo-600"></i>
+                    Parameter Auto Assignment Tim
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    {{-- Priority --}}
+                    <div>
+                        <label for="priority" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Priority <span class="text-red-500">*</span>
+                        </label>
+                        <select name="priority" id="priority"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('priority') border-red-500 @enderror"
+                            required>
+                            <option value="">-- Pilih Priority --</option>
+                            <option value="1" {{ old('priority', $projectRequest->priority) == 1 ? 'selected' : '' }}>Low</option>
+                            <option value="2" {{ old('priority', $projectRequest->priority) == 2 ? 'selected' : '' }}>Medium</option>
+                            <option value="3" {{ old('priority', $projectRequest->priority) == 3 ? 'selected' : '' }}>High</option>
+                            <option value="4" {{ old('priority', $projectRequest->priority) == 4 ? 'selected' : '' }}>Critical</option>
+                        </select>
+                        @error('priority')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Difficulty --}}
+                    <div>
+                        <label for="difficulty" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Difficulty <span class="text-red-500">*</span>
+                        </label>
+                        <select name="difficulty" id="difficulty"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 @error('difficulty') border-red-500 @enderror"
+                            required>
+                            <option value="">-- Pilih Difficulty --</option>
+                            <option value="1" {{ old('difficulty', $projectRequest->difficulty) == 1 ? 'selected' : '' }}>Sangat Mudah</option>
+                            <option value="2" {{ old('difficulty', $projectRequest->difficulty) == 2 ? 'selected' : '' }}>Mudah</option>
+                            <option value="3" {{ old('difficulty', $projectRequest->difficulty) == 3 ? 'selected' : '' }}>Sedang</option>
+                            <option value="4" {{ old('difficulty', $projectRequest->difficulty) == 4 ? 'selected' : '' }}>Sulit</option>
+                            <option value="5" {{ old('difficulty', $projectRequest->difficulty) == 5 ? 'selected' : '' }}>Sangat Sulit</option>
+                        </select>
+                        @error('difficulty')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                </div>
+
+                {{-- Task Weight Preview --}}
+                @if($projectRequest->priority && $projectRequest->difficulty)
+                    <div class="mt-3 p-3 bg-white border border-indigo-200 rounded-lg">
+                        <p class="text-xs text-indigo-700">
+                            <i class="fas fa-calculator mr-1"></i>
+                            <strong>Task Weight saat ini:</strong>
+                            {{ $projectRequest->priority }} × {{ $projectRequest->difficulty }}
+                            = <strong class="text-indigo-900">{{ $projectRequest->priority * $projectRequest->difficulty }}</strong>
+                        </p>
+                    </div>
+                @endif
             </div>
 
             {{-- DOKUMEN --}}
@@ -115,6 +198,9 @@
                         </a>
                     </p>
                 @endif
+                @error('document')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- BUTTON --}}
@@ -127,17 +213,6 @@
             </div>
 
         </form>
-        @if ($errors->any())
-    <div class="bg-red-100 border-l-4 border-red-600 text-red-700 p-3 my-3">
-        <strong>Error:</strong>
-        <ul class="mt-2 list-disc list-inside">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
     </div>
 </div>
 @endsection

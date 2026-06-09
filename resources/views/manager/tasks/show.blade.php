@@ -49,7 +49,7 @@
                         <i class="fas fa-folder-open text-indigo-500"></i> Project
                     </div>
                     <p class="mt-1 text-lg font-semibold text-gray-800">
-                        {{ $task->project->projectRequest->name_project ?? '-' }}
+                        {{ $task->project->projectRequest?->name_project ?? '-' }}
                     </p>
                 </div>
 

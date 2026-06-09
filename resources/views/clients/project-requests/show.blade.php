@@ -70,6 +70,55 @@
                 <p class="text-gray-700">{{ $projectRequest->kategori }}</p>
             </div>
 
+            {{-- Auto Assignment Parameters --}}
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5 my-4">
+                <h4 class="text-sm font-bold text-indigo-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-robot text-indigo-600"></i>
+                    Parameter Auto Assignment
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    {{-- Priority --}}
+                    <div class="bg-white rounded-lg p-4 border border-indigo-100">
+                        <p class="text-xs text-gray-500 font-medium mb-1">Priority</p>
+                        @php
+                            $priorityBadge = [
+                                1 => 'bg-gray-100 text-gray-800',
+                                2 => 'bg-blue-100 text-blue-800',
+                                3 => 'bg-yellow-100 text-yellow-800',
+                                4 => 'bg-orange-100 text-orange-800',
+                                5 => 'bg-red-100 text-red-800',
+                            ][$projectRequest->priority] ?? 'bg-gray-100 text-gray-800';
+
+                            $priorityLabel = \App\Models\ProjectRequest::PRIORITY_LABELS[$projectRequest->priority] ?? '-';
+                        @endphp
+                        <span class="inline-block px-3 py-1 text-xs font-bold rounded-full {{ $priorityBadge }}">
+                            {{ $projectRequest->priority }} — {{ $priorityLabel }}
+                        </span>
+                    </div>
+
+                    {{-- Difficulty --}}
+                    <div class="bg-white rounded-lg p-4 border border-indigo-100">
+                        <p class="text-xs text-gray-500 font-medium mb-1">Difficulty</p>
+                        <p class="font-bold text-gray-800">
+                            {{ $projectRequest->difficulty }} — {{ \App\Models\ProjectRequest::DIFFICULTY_LABELS[$projectRequest->difficulty] ?? '-' }}
+                        </p>
+                    </div>
+
+                    {{-- Estimated Duration --}}
+                    <div class="bg-white rounded-lg p-4 border border-indigo-100">
+                        <p class="text-xs text-gray-500 font-medium mb-1">Estimasi Durasi</p>
+                        <p class="font-bold text-gray-800">
+                            {{ $projectRequest->estimated_duration ? $projectRequest->estimated_duration . ' Jam' : '-' }}
+                        </p>
+                    </div>
+
+                </div>
+
+
+            </div>
+
             {{-- Deskripsi --}}
             <div>
                 <p class="text-sm text-gray-500">Deskripsi</p>

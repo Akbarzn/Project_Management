@@ -2,12 +2,14 @@
 
 /*
 |--------------------------------------------------------------------------
-| Test Case
+| Test Case – Workload Balancing Testing Suite
 |--------------------------------------------------------------------------
 |
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "pest()" function to bind a different classes or traits.
+| Konfigurasi global untuk semua test dalam project ini.
+|
+| Arsitektur test yang digunakan:
+| - Unit Test   : tests/Unit/ → Menguji logic terisolasi, tanpa DB, pakai Mock
+| - Feature Test: tests/Feature/ → Menguji endpoint HTTP end-to-end, pakai DB
 |
 */
 
@@ -17,31 +19,42 @@ pest()->extend(Tests\TestCase::class)
 
 /*
 |--------------------------------------------------------------------------
-| Expectations
+| Custom Expectations
 |--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+// Validasi workload score tidak negatif
+expect()->extend('toBeValidWorkload', function () {
+    return $this->toBeGreaterThanOrEqual(0);
+});
+
+// Validasi capacity_pct selalu antara 0 dan nilai positif
+expect()->extend('toBeValidCapacityPct', function () {
+    return $this->toBeGreaterThanOrEqual(0);
 });
 
 /*
 |--------------------------------------------------------------------------
-| Functions
+| Global Helper Functions untuk Test
 |--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
 */
 
-function something()
+/**
+ * Hitung workload secara manual menggunakan formula yang sama dengan service.
+ * Berguna untuk validasi hasil kalkulasi di test.
+ *
+ * Formula: workload = activeHours + (activeProjects × 5)
+ */
+function calculateExpectedWorkload(float $activeHours, int $activeProjects): float
 {
-    // ..
+    return $activeHours + ($activeProjects * 5);
+}
+
+/**
+ * Hitung capacity_pct secara manual.
+ */
+function calculateExpectedCapacityPct(float $workload, int $maxWorkload): float
+{
+    if ($maxWorkload <= 0) return 100.0;
+    return round(($workload / $maxWorkload) * 100, 1);
 }

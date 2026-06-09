@@ -72,6 +72,65 @@
             @enderror
         </div>
 
+        {{-- Parameter Auto Assignment Tim --}}
+        <div class="mb-6 p-5 bg-indigo-50 border border-indigo-200 rounded-xl">
+            <h3 class="text-base font-bold text-indigo-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-robot text-indigo-600"></i>
+                Parameter Auto Assignment Tim
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {{-- Priority --}}
+                <div>
+                    <label for="priority" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Priority
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <select name="priority" id="priority"
+                        class="w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 @error('priority') border-red-500 @enderror"
+                        required>
+                        <option value="">-- Pilih Priority --</option>
+                        <option value="1" {{ old('priority', $projectRequest->priority) == '1' ? 'selected' : '' }}>Low</option>
+                        <option value="2" {{ old('priority', $projectRequest->priority) == '2' ? 'selected' : '' }}>Medium</option>
+                        <option value="3" {{ old('priority', $projectRequest->priority) == '3' ? 'selected' : '' }}>High</option>
+                        <option value="4" {{ old('priority', $projectRequest->priority) == '4' ? 'selected' : '' }}>Critical</option>
+                    </select>
+                    @error('priority')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Difficulty --}}
+                <div>
+                    <label for="difficulty" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Difficulty
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <select name="difficulty" id="difficulty"
+                        class="w-full border-gray-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 @error('difficulty') border-red-500 @enderror"
+                        required>
+                        <option value="">-- Pilih Difficulty --</option>
+                        <option value="1" {{ old('difficulty', $projectRequest->difficulty) == '1' ? 'selected' : '' }}>Sangat Mudah</option>
+                        <option value="2" {{ old('difficulty', $projectRequest->difficulty) == '2' ? 'selected' : '' }}>Mudah</option>
+                        <option value="3" {{ old('difficulty', $projectRequest->difficulty) == '3' ? 'selected' : '' }}>Sedang</option>
+                        <option value="4" {{ old('difficulty', $projectRequest->difficulty) == '4' ? 'selected' : '' }}>Sulit</option>
+                        <option value="5" {{ old('difficulty', $projectRequest->difficulty) == '5' ? 'selected' : '' }}>Sangat Sulit</option>
+                    </select>
+                    @error('difficulty')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+            </div>
+
+            {{-- Info Task Weight --}}
+            <p class="text-xs text-indigo-600 mt-3">
+                <i class="fas fa-info-circle mr-1"></i>
+                <strong>Task Weight</strong> = Priority × Difficulty — digunakan oleh sistem untuk mengukur bobot penugasan pada pembagian tim otomatis (Least Load).
+            </p>
+        </div>
+
         {{-- Dokumen --}}
         <div>
             <label for="document" class="block text-gray-700 font-medium mb-2">Upload Dokumen (Opsional)</label>
